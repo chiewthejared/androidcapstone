@@ -1,0 +1,76 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <!-- Back Button -->
+    <Button
+        android:id="@+id/backButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Back"
+        android:padding="8dp"
+        android:backgroundTint="@android:color/darker_gray"
+        android:textColor="@android:color/white"
+        android:layout_marginBottom="16dp" />
+
+    <!-- Event Title -->
+    <TextView
+        android:id="@+id/eventDetailTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        android:paddingBottom="8dp" />
+
+    <!-- Event Date Section -->
+    <TextView
+        android:id="@+id/eventDetailDate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Date: February 26, 2025"
+        android:textSize="18sp"
+        android:textStyle="italic"
+        android:paddingBottom="4dp" />
+
+    <!-- Event Time -->
+    <TextView
+        android:id="@+id/eventDetailTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="18sp"
+        android:paddingBottom="4dp" />
+
+    <!-- Event Tag -->
+    <TextView
+        android:id="@+id/eventDetailTag"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="16sp"
+        android:paddingBottom="4dp" />
+
+    <!-- Event Description -->
+    <TextView
+        android:id="@+id/eventDetailDescription"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="16sp" />
+
+    <!-- Edit Event Button -->
+    <Button
+        android:id="@+id/editEventButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Edit Event"
+        android:layout_marginTop="16dp" />
+
+    <!-- Delete Event Button -->
+    <Button
+        android:id="@+id/deleteEventButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Delete Event"
+        android:layout_marginTop="8dp" />
+
+</LinearLayout>

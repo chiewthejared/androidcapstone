@@ -1,0 +1,87 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <!-- Event Title Input -->
+    <EditText
+        android:id="@+id/eventTitleInput"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Event Title" />
+
+    <!-- Event Description Input -->
+    <EditText
+        android:id="@+id/eventDescriptionInput"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Description" />
+
+    <!-- Date Selection Button -->
+    <Button
+        android:id="@+id/eventDateButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Select Date" />
+
+    <!-- Time Selection Buttons -->
+    <Button
+        android:id="@+id/eventStartTimeButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Select Start Time" />
+
+    <Button
+        android:id="@+id/eventEndTimeButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Select End Time" />
+
+    <!-- Spinner for selecting tags -->
+    <Spinner
+        android:id="@+id/eventTagSpinner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <!-- Input field for adding a new tag -->
+    <EditText
+        android:id="@+id/eventTagInput"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter new tag"
+        android:visibility="gone" />
+
+    <!-- Button to add the new tag to the spinner list -->
+    <Button
+        android:id="@+id/addTagButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Add New Tag" />
+
+    <Spinner
+        android:id="@+id/timeIntervalSpinner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <EditText
+        android:id="@+id/dayInputField"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter details for selected day"
+        android:visibility="gone" />
+
+    <!-- Spinner for selecting a day -->
+
+    <!-- Input field that appears when a day is selected -->
+
+
+    <!-- Save Event Button -->
+    <Button
+        android:id="@+id/saveEventButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Save Event"
+        android:backgroundTint="@color/teal" />
+
+</LinearLayout>

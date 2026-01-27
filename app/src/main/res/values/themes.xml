@@ -1,0 +1,11 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Base.Theme.Test_V2" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Override default colors -->
+        <item name="colorPrimary">@color/forest_green</item>
+        <item name="colorPrimaryContainer">@color/forest_green</item>
+        <item name="colorOnPrimary">@android:color/white</item> <!-- Text color on buttons -->
+    </style>
+
+    <style name="Theme.Test_V2" parent="Base.Theme.Test_V2" />
+</resources>

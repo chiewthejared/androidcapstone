@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/white" >
+
+    <!-- Header with two colors -->
+    <LinearLayout
+        android:id="@+id/header_bar"
+        android:layout_width="match_parent"
+        android:layout_height="47dp"
+        android:orientation="horizontal">
+
+        <!-- Left half: gold -->
+        <View
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="#FFD700" />
+
+        <!-- Right half: dark red -->
+        <View
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="#8B0000" />
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/back_button_bottom"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true"
+        android:text="Back"
+        android:layout_marginBottom="16dp"
+        android:layout_marginStart="16dp" />
+
+    <!-- Timer display near top, below header -->
+    <TextView
+        android:id="@+id/timer_display"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/header_bar"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="16dp"
+        android:text="00:00:00.000"
+        android:textSize="32sp"
+        android:textStyle="bold" />
+
+    <!-- The rectangular scrolling box for action logs -->
+    <ScrollView
+        android:id="@+id/action_log_scroll"
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:layout_below="@id/timer_display"
+        android:layout_marginTop="12dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:fadeScrollbars="false"
+        android:clipToPadding="false">
+
+        <LinearLayout
+            android:id="@+id/action_log_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- Big circular toggle button (Start, Pause, Resume) near bottom center -->
+    <Button
+        android:id="@+id/toggle_timer_button"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="90dp"
+        android:background="@drawable/circle_button_bg"
+    android:text="Start"
+    android:textSize="16sp"
+    android:textStyle="bold"
+    android:gravity="center"
+    android:drawablePadding="4dp"
+    android:contentDescription="Start/Pause/Resume" />
+
+    <!-- "Add Time" button near bottom -->
+    <Button
+        android:id="@+id/add_time_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:text="Add Time"
+        android:layout_marginBottom="16dp" />
+
+    <!-- "See Past Times" button, if you want it on this screen too -->
+    <Button
+        android:id="@+id/view_past_times_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="16dp"
+        android:layout_alignParentEnd="true"
+        android:text="See Past Times"
+        android:layout_marginEnd="16dp" />
+
+</RelativeLayout>

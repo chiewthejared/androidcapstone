@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@android:color/white">
+
+    <!-- Header -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="47dp"
+            android:layout_weight="1"
+            android:background="#FFD700" /> <!-- Gold color -->
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="47dp"
+            android:layout_weight="1"
+            android:background="#8B0000" /> <!-- Red color -->
+
+    </LinearLayout>
+
+    <!-- Content Wrapper -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <!-- Title -->
+            <TextView
+                android:id="@+id/title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Create Account"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="24dp"
+                android:contentDescription="Title: Create Account" />
+
+            <!-- Profile Picture -->
+            <ImageView
+                android:id="@+id/profile_picture"
+                android:layout_width="120dp"
+                android:layout_height="120dp"
+                android:layout_gravity="center"
+                android:layout_marginBottom="8dp"
+                android:src="@drawable/ic_person"
+                android:contentDescription="Profile Picture"
+                android:background="#EEEEEE"
+                android:padding="8dp"
+                android:elevation="4dp" />
+
+            <!-- Picture Upload Explanation -->
+            <TextView
+                android:id="@+id/upload_instructions"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="Tap above to upload a photo. This can be done later."
+                android:textSize="14sp"
+                android:textColor="#666666"
+                android:layout_marginBottom="24dp"
+                android:contentDescription="Instructions to upload profile picture" />
+
+            <!-- Full Name -->
+            <EditText
+                android:id="@+id/fullName"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:hint="Full Name"
+                android:inputType="textPersonName"
+                android:layout_marginBottom="16dp"
+                android:importantForAutofill="yes"
+                android:textColorHint="#666666" />
+
+            <!-- PIN -->
+            <EditText
+                android:id="@+id/pin"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:hint="4-digit PIN"
+                android:inputType="numberPassword"
+                android:maxLength="4"
+                android:layout_marginBottom="16dp"
+                android:importantForAutofill="yes"
+                android:textColorHint="#666666" />
+
+            <!-- Confirm PIN -->
+            <EditText
+                android:id="@+id/confirmPin"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:hint="Confirm 4-digit PIN"
+                android:inputType="numberPassword"
+                android:maxLength="4"
+                android:layout_marginBottom="24dp"
+                android:importantForAutofill="yes"
+                android:textColorHint="#666666" />
+
+            <!-- Continue Button -->
+            <Button
+                android:id="@+id/continueButton"
+                android:layout_width="wrap_content"
+                android:layout_height="48dp"
+                android:text="Continue"
+                android:backgroundTint="#008000"
+                android:textColor="@android:color/white"
+                android:contentDescription="Button to continue" />
+
+            <!-- Learn More -->
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Learn more about the foundation "
+                    android:textColor="#666666"
+                    android:contentDescription="Foundation information text" />
+
+                <TextView
+                    android:id="@+id/learnMoreLink"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:clickable="true"
+                    android:contentDescription="Clickable link to learn more"
+                    android:focusable="true"
+                    android:text="here"
+                    android:textColor="#018786"
+                    tools:ignore="TouchTargetSizeCheck" />
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </ScrollView>
+</LinearLayout>

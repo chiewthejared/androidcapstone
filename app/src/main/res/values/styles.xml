@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Base application theme -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimary">#8B0000</item> <!-- Red color -->
+        <item name="colorPrimaryDark">#FFD700</item> <!-- Gold color -->
+        <item name="colorAccent">#008000</item> <!-- Green color -->
+    </style>
+
+    <!-- Style for Number Pad Buttons -->
+    <style name="NumberPadButton">
+        <item name="android:layout_width">80dp</item>
+        <item name="android:layout_height">80dp</item>
+        <item name="android:backgroundTint">#CCCCCC</item> <!-- Light gray -->
+        <item name="android:textSize">24sp</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:layout_margin">8dp</item> <!-- Space between buttons -->
+    </style>
+
+    <style name="DayHeaderStyle">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_columnWeight">1</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">#444</item>
+        <item name="android:gravity">center</item>
+        <item name="android:padding">4dp</item>
+    </style>
+
+    <style name="WrappedDialog" parent="Theme.Material3.DayNight.Dialog">
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:background">@android:color/transparent</item>
+        <!-- These two expect fractions like "90%" or @fraction -->
+        <item name="android:windowMinWidthMajor">90%</item>
+        <item name="android:windowMinWidthMinor">90%</item>
+    </style>
+
+
+
+
+
+</resources>

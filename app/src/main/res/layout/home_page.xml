@@ -1,0 +1,309 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/white">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="0dp">
+
+        <!-- Header -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="50dp"
+                android:layout_weight="1"
+                android:background="#FFD700" /> <!-- Gold -->
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="50dp"
+                android:layout_weight="1"
+                android:background="#8B0000" /> <!-- Magenta -->
+
+        </LinearLayout>
+
+        <!-- User Info Section -->
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="0dp"
+            android:padding="8dp"
+            android:background="#EEEEEE">
+
+            <!-- Timer Icon -->
+            <ImageView
+                android:id="@+id/timer_icon"
+                android:layout_width="70dp"
+                android:layout_height="70dp"
+                android:layout_alignParentStart="true"
+                android:layout_marginEnd="8dp"
+                android:src="@drawable/ic_timer"
+                android:contentDescription="Timer Icon" />
+
+            <!-- Notification Icon -->
+            <ImageView
+                android:id="@+id/notification_icon"
+                android:layout_width="70dp"
+                android:layout_height="70dp"
+                android:layout_alignParentEnd="true"
+                android:layout_marginBottom="16dp"
+                android:src="@drawable/ic_notification"
+                android:contentDescription="Notification Icon" />
+
+            <!-- User Profile -->
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:orientation="vertical"
+                android:gravity="center">
+
+                <ImageView
+                    android:id="@+id/profile_picture"
+                    android:layout_width="120dp"
+                    android:layout_height="120dp"
+                    android:layout_marginBottom="8dp"
+                    android:src="@drawable/ic_person"
+                    android:contentDescription="Profile Picture" />
+
+                <TextView
+                    android:id="@+id/user_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="John Doe"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <!-- Logout Button -->
+            <Button
+                android:id="@+id/logout_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentEnd="true"
+                android:text="Logout"
+                android:backgroundTint="#8B0000"
+                android:textColor="@android:color/white"
+                android:layout_margin="8dp"
+                android:contentDescription="Logout Button" />
+        </RelativeLayout>
+
+        <!-- Feature Tiles -->
+        <GridLayout
+            android:id="@+id/tile_grid"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:columnCount="2"
+            android:padding="8dp"
+            android:layout_gravity="center"
+            android:alignmentMode="alignMargins"
+            android:useDefaultMargins="true">
+
+            <!-- View Calendar -->
+            <FrameLayout
+                android:id="@+id/view_calendar_tile"
+                android:layout_width="160dp"
+                android:layout_height="160dp"
+                android:layout_margin="8dp"
+                android:background="@drawable/tile_background"
+                android:clickable="true"
+                android:focusable="true">
+
+                <ImageView
+                    android:layout_width="70dp"
+                    android:layout_height="70dp"
+                    android:layout_gravity="center_horizontal|top"
+                    android:layout_marginTop="16dp"
+                    android:src="@drawable/ic_calendar"
+                    android:contentDescription="View Calendar" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal|bottom"
+                    android:padding="8dp"
+                    android:text="Calendar"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+            </FrameLayout>
+
+            <!-- Add Notes -->
+            <FrameLayout
+                android:id="@+id/add_notes_tile"
+                android:layout_width="160dp"
+                android:layout_height="160dp"
+                android:layout_margin="8dp"
+                android:background="@drawable/tile_background"
+                android:clickable="true"
+                android:focusable="true">
+
+                <ImageView
+                    android:layout_width="70dp"
+                    android:layout_height="70dp"
+                    android:layout_gravity="center_horizontal|top"
+                    android:layout_marginTop="16dp"
+                    android:src="@drawable/ic_notes"
+                    android:contentDescription="Add Notes" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal|bottom"
+                    android:padding="8dp"
+                    android:text="Notes"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+            </FrameLayout>
+
+            <!-- Medication Tracker -->
+            <FrameLayout
+                android:id="@+id/medication_tracker_tile"
+                android:layout_width="160dp"
+                android:layout_height="160dp"
+                android:layout_margin="8dp"
+                android:background="@drawable/tile_background"
+                android:clickable="true"
+                android:focusable="true">
+
+                <ImageView
+                    android:layout_width="70dp"
+                    android:layout_height="70dp"
+                    android:layout_gravity="center_horizontal|top"
+                    android:layout_marginTop="16dp"
+                    android:src="@drawable/ic_medication"
+                    android:contentDescription="Medication Tracker" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal|bottom"
+                    android:padding="8dp"
+                    android:text="Meds &amp; Equipment"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+            </FrameLayout>
+
+            <!-- Doctor Info -->
+            <FrameLayout
+                android:id="@+id/doctor_info_tile"
+                android:layout_width="160dp"
+                android:layout_height="160dp"
+                android:layout_margin="8dp"
+                android:background="@drawable/tile_background"
+                android:clickable="true"
+                android:focusable="true">
+
+                <ImageView
+                    android:layout_width="70dp"
+                    android:layout_height="70dp"
+                    android:layout_gravity="center_horizontal|top"
+                    android:layout_marginTop="16dp"
+                    android:src="@drawable/ic_doctor"
+                    android:contentDescription="Doctor Info" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal|bottom"
+                    android:padding="8dp"
+                    android:text="Doctor Info"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+            </FrameLayout>
+
+            <!-- Analytics -->
+            <FrameLayout
+                android:id="@+id/analytics_tile"
+                android:layout_width="160dp"
+                android:layout_height="160dp"
+                android:layout_margin="8dp"
+                android:background="@drawable/tile_background"
+                android:clickable="true"
+                android:focusable="true">
+
+                <ImageView
+                    android:layout_width="70dp"
+                    android:layout_height="70dp"
+                    android:layout_gravity="center_horizontal|top"
+                    android:layout_marginTop="16dp"
+                    android:src="@drawable/ic_analytics"
+                    android:contentDescription="Analytics Page" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal|bottom"
+                    android:padding="8dp"
+                    android:text="Analytics"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+            </FrameLayout>
+
+            <!-- Read Articles -->
+            <FrameLayout
+                android:id="@+id/articles_videos_tile"
+                android:layout_width="160dp"
+                android:layout_height="160dp"
+                android:layout_margin="8dp"
+                android:background="@drawable/tile_background"
+                android:clickable="true"
+                android:focusable="true">
+
+                <ImageView
+                    android:layout_width="70dp"
+                    android:layout_height="70dp"
+                    android:layout_gravity="center_horizontal|top"
+                    android:layout_marginTop="16dp"
+                    android:src="@drawable/ic_articles"
+                    android:contentDescription="Read Articles" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal|bottom"
+                    android:padding="8dp"
+                    android:text="Articles &amp; Videos"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+            </FrameLayout>
+
+            <!-- Add Notes -->
+            <FrameLayout
+                android:id="@+id/timer_tile"
+                android:layout_width="160dp"
+                android:layout_height="160dp"
+                android:layout_margin="8dp"
+                android:background="@drawable/tile_background"
+                android:clickable="true"
+                android:focusable="true">
+
+                <ImageView
+                    android:layout_width="70dp"
+                    android:layout_height="70dp"
+                    android:layout_gravity="center_horizontal|top"
+                    android:layout_marginTop="16dp"
+                    android:src="@drawable/ic_timer"
+                    android:contentDescription="Go to Timer" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal|bottom"
+                    android:padding="8dp"
+                    android:text="Timer"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+            </FrameLayout>
+        </GridLayout>
+    </LinearLayout>
+</ScrollView>

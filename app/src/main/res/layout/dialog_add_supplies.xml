@@ -1,0 +1,310 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="16dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- Title -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Adjust Supply"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:paddingBottom="12dp" />
+
+        <!-- Required Fields -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Supply Name (Required)" />
+
+        <EditText
+            android:id="@+id/supply_name_input"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:maxLength="50" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Next Order Date (Required)" />
+
+        <Button
+            android:id="@+id/supply_next_order_date_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Select Date" />
+
+        <!-- Other Fields -->
+        <!-- Preferred Brand -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Preferred Brand" />
+
+        <EditText
+            android:id="@+id/supply_preferred_brand_input"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <!-- Alternative Brands -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Alternative Brands" />
+
+        <EditText
+            android:id="@+id/supply_alternative_brands_input"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <!-- SKU -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="SKU" />
+
+        <EditText
+            android:id="@+id/supply_sku_input"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <!-- Size -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Size" />
+
+        <EditText
+            android:id="@+id/supply_size_input"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <!-- Order Quantity -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Order Quantity" />
+
+        <EditText
+            android:id="@+id/supply_order_quantity_input"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="number" />
+
+        <!-- Order Frequency -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Order Frequency" />
+
+        <EditText
+            android:id="@+id/supply_order_frequency_input"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <!-- Refills Remaining -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Refills Remaining" />
+
+        <EditText
+            android:id="@+id/supply_refills_remaining_input"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="number" />
+
+        <!-- Medical Supply Company -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Medical Supply Company" />
+
+        <EditText
+            android:id="@+id/supply_company_input"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <!-- Company Phone -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Supply Company Phone" />
+
+        <EditText
+            android:id="@+id/supply_company_phone_input"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="phone" />
+
+        <!-- Company Address -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Supply Company Address" />
+
+        <EditText
+            android:id="@+id/supply_company_address_input"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <!-- Prescribing Doctor -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Prescribing Doctor" />
+
+        <EditText
+            android:id="@+id/supply_prescribing_doctor_input"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <!-- Date Prescribed -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Date Prescribed" />
+
+        <Button
+            android:id="@+id/supply_date_prescribed_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Select Date" />
+
+        <!-- Insurance Used -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Insurance Used" />
+
+        <EditText
+            android:id="@+id/supply_insurance_used_input"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <!-- Last Order Date -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Last Order Date" />
+
+        <Button
+            android:id="@+id/supply_last_order_date_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Select Date" />
+
+        <!-- Expected Delivery Date -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Expected Delivery Date" />
+
+        <Button
+            android:id="@+id/supply_expected_delivery_date_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Select Date" />
+
+        <!-- Expiry Date -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Expiry Date" />
+
+        <Button
+            android:id="@+id/supply_expiry_date_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Select Date" />
+
+        <!-- Alternate Sources -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Alternate Medical Supply Sources" />
+
+        <EditText
+            android:id="@+id/supply_alternate_sources_input"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <!-- Notes -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Notes" />
+
+        <EditText
+            android:id="@+id/supply_notes_input"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <!-- Reminders Section -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Reminders To Order Supplies:"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:paddingTop="10dp" />
+
+        <CheckBox
+            android:id="@+id/reminder_2_weeks"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="2 Weeks Before" />
+
+        <CheckBox
+            android:id="@+id/reminder_1_week"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="1 Week Before" />
+
+        <CheckBox
+            android:id="@+id/reminder_5_days"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="5 Days Before" />
+
+        <CheckBox
+            android:id="@+id/reminder_3_days"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="3 Days Before" />
+
+        <CheckBox
+            android:id="@+id/reminder_1_day"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="1 Day Before" />
+
+        <CheckBox
+            android:id="@+id/reminder_day_of"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Day Of" />
+
+        <!-- Action Buttons -->
+        <Button
+            android:id="@+id/save_supply_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Save"
+            android:layout_marginTop="12dp" />
+
+        <Button
+            android:id="@+id/cancel_supply_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Cancel" />
+
+    </LinearLayout>
+</ScrollView>

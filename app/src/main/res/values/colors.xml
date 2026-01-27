@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="teal">#018786</color>
+    <color name="forest_green">#0b3533</color> <!-- Hex for forest green -->
+</resources>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="recyclerViewArticles" type="id" />
+    <item name="logo" type="id" />
+    <item name="mission_title" type="id" />
+    <item name="mission_text" type="id" />
+    <item name="vision_title" type="id" />
+    <item name="vision_text" type="id" />
+    <item name="app_purpose_text" type="id" />
+    <item name="continue_button" type="id" />
+    <item name="learn_more" type="id" />
+    <item name="app_purpose_title" type="id" />
+</resources>

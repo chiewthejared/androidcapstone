@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="16dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView android:text="Doctor Name (Required)"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+        <EditText android:id="@+id/doctor_name" android:layout_width="match_parent" android:layout_height="wrap_content"/>
+
+        <TextView android:text="Specialty (Required)"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+        <EditText android:id="@+id/specialty" android:layout_width="match_parent" android:layout_height="wrap_content"/>
+
+        <TextView android:text="Clinic"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+        <EditText android:id="@+id/clinic" android:layout_width="match_parent" android:layout_height="wrap_content"/>
+
+        <TextView android:text="Conditions Treated"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+        <EditText android:id="@+id/conditions" android:layout_width="match_parent" android:layout_height="wrap_content"/>
+
+        <TextView android:text="Office Name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+        <EditText android:id="@+id/office" android:layout_width="match_parent" android:layout_height="wrap_content"/>
+
+        <TextView android:text="Phone Number"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+        <EditText android:id="@+id/phone" android:layout_width="match_parent" android:layout_height="wrap_content"/>
+
+        <TextView android:text="Fax"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+        <EditText android:id="@+id/fax" android:layout_width="match_parent" android:layout_height="wrap_content"/>
+
+        <TextView android:text="Address"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+        <EditText android:id="@+id/address" android:layout_width="match_parent" android:layout_height="wrap_content"/>
+
+        <TextView android:text="Insurance Accepted"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+        <EditText android:id="@+id/insurance" android:layout_width="match_parent" android:layout_height="wrap_content"/>
+
+        <TextView android:text="Notes"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+        <EditText android:id="@+id/notes" android:layout_width="match_parent" android:layout_height="wrap_content"/>
+
+        <Button
+            android:id="@+id/save_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Save"
+            android:layout_marginTop="12dp"/>
+
+        <Button
+            android:id="@+id/cancel_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Cancel"/>
+
+    </LinearLayout>
+</ScrollView>

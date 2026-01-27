@@ -1,0 +1,270 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="16dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- Title -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Adjust Equipment"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:paddingBottom="12dp" />
+
+        <!-- Required Fields -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Equipment Name (Required)" />
+
+        <EditText
+            android:id="@+id/equip_name_input"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:maxLength="50" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Maintenance Date (Required)" />
+
+        <Button
+            android:id="@+id/equip_maintenance_date_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Select Date" />
+
+        <!-- New Fields -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Equipment Serial Number" />
+
+        <EditText
+            android:id="@+id/equip_serial_number_input"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Equipment Weight" />
+
+        <EditText
+            android:id="@+id/equip_weight_input"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Size" />
+
+        <EditText
+            android:id="@+id/equip_size_input"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Prescribing Doctor" />
+
+        <EditText
+            android:id="@+id/equip_prescribing_doctor_input"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Date Prescribed" />
+
+        <Button
+            android:id="@+id/equip_date_prescribed_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Select Date" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Insurance Used" />
+
+        <EditText
+            android:id="@+id/equip_insurance_used_input"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Date Purchased" />
+
+        <Button
+            android:id="@+id/equip_date_purchased_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Select Date" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Good Through Date" />
+
+        <Button
+            android:id="@+id/equip_good_through_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Select Date" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Replacement Available On Date" />
+
+        <Button
+            android:id="@+id/equip_replacement_available_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Select Date" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Equipment Provider" />
+
+        <EditText
+            android:id="@+id/equip_provider_input"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Loaned or Purchased" />
+
+        <EditText
+            android:id="@+id/equip_loaned_or_purchased_input"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Maintenance Provider" />
+
+        <EditText
+            android:id="@+id/equip_maintenance_provider_input"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Last Maintenance Date" />
+
+        <Button
+            android:id="@+id/equip_last_maintenance_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Select Date" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Spare Parts/Tools" />
+
+        <EditText
+            android:id="@+id/equip_spare_parts_tools_input"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Associated Components" />
+
+        <EditText
+            android:id="@+id/equip_associated_components_input"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Notes" />
+
+        <EditText
+            android:id="@+id/equip_notes_input"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <!-- Reminders -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Reminders To Schedule Maintenance:"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:paddingTop="10dp" />
+
+        <CheckBox
+            android:id="@+id/reminder_2_weeks"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="2 Weeks Before" />
+
+        <CheckBox
+            android:id="@+id/reminder_1_week"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="1 Week Before" />
+
+        <CheckBox
+            android:id="@+id/reminder_5_days"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="5 Days Before" />
+
+        <CheckBox
+            android:id="@+id/reminder_3_days"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="3 Days Before" />
+
+        <CheckBox
+            android:id="@+id/reminder_1_day"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="1 Day Before" />
+
+        <CheckBox
+            android:id="@+id/reminder_day_of"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Day Of" />
+
+        <!-- Action Buttons -->
+        <Button
+            android:id="@+id/save_equip_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Save"
+            android:layout_marginTop="12dp" />
+
+        <Button
+            android:id="@+id/cancel_equip_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Cancel" />
+
+    </LinearLayout>
+</ScrollView>

@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="16dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Adjust Medication"
+            android:textSize="24sp"
+            android:textStyle="bold"/>
+
+        <!-- Required Fields -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Medication Name (Required)"/>
+
+        <EditText
+            android:id="@+id/med_name_input"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:maxLength="50"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Dosage (Required)"/>
+
+        <EditText
+            android:id="@+id/med_dosage_input"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:maxLength="50"/>
+
+        <!-- Other Fields -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Alternative Medication Names"/>
+
+        <EditText
+            android:id="@+id/med_other_names_input"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:maxLength="100"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Time To Take Med (Required)"/>
+
+        <Button
+            android:id="@+id/add_time_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Select Time"/>
+
+        <LinearLayout
+            android:id="@+id/time_selection_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Special Instructions"/>
+
+        <EditText
+            android:id="@+id/med_special_instructions"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:maxLength="100"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Bottle Description"/>
+
+        <EditText
+            android:id="@+id/med_bottle_description"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:maxLength="50"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Possible Side Effects"/>
+
+        <EditText
+            android:id="@+id/med_side_effects"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:maxLength="350"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Prescribing Doctor"/>
+
+        <EditText
+            android:id="@+id/med_prescribing_doctor"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:maxLength="100"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Date &amp; Reason Prescribed"/>
+
+        <EditText
+            android:id="@+id/med_reason_prescribed"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:maxLength="100"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Notes"/>
+
+        <EditText
+            android:id="@+id/med_notes"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:maxLength="350"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Refill Date"/>
+
+        <Button
+            android:id="@+id/med_refill_date_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Select Date"/>
+
+        <!-- Reminder Checkboxes -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Reminder To Schedule Fillup:"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:paddingTop="10dp"/>
+
+        <CheckBox
+            android:id="@+id/reminder_2_weeks"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="2 Weeks Before"/>
+
+        <CheckBox
+            android:id="@+id/reminder_1_week"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="1 Week Before"/>
+
+        <CheckBox
+            android:id="@+id/reminder_5_days"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="5 Days Before"/>
+
+        <CheckBox
+            android:id="@+id/reminder_3_days"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="3 Days Before"/>
+
+        <CheckBox
+            android:id="@+id/reminder_1_day"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="1 Day Before"/>
+
+        <CheckBox
+            android:id="@+id/reminder_day_of"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Day Of"/>
+
+        <!-- Buttons -->
+        <Button
+            android:id="@+id/save_med_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Save"/>
+
+        <Button
+            android:id="@+id/cancel_med_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Cancel"/>
+
+    </LinearLayout>
+</ScrollView>
