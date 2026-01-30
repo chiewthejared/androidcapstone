@@ -3,9 +3,9 @@ package com.example.test_v2;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
-import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
@@ -18,6 +18,7 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.text.InputType;
+import android.widget.ImageButton;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -35,15 +36,30 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-
-
+/**
+ * TimerPage activity — unified, compiled version.
+ * Uses the layout ids:
+ *  - R.id.timer_display
+ *  - R.id.play_pause_button
+ *  - R.id.stop_button
+ *  - R.id.back_button
+ *  - R.id.history_button
+ *  - R.id.action_log_scroll
+ *  - R.id.action_log_container
+ *
+ * Keeps the original timer logic, intervals persistence and DB saving (finalizeAndSave()).
+ */
 public class TimerPage extends AppCompatActivity {
 
     // UI elements
-    private Button backButton;
+    private ImageButton backButton;
     private TextView timerDisplay;
-    private Button toggleTimerButton;  // Single big button: Start → Pause → Resume
-    private Button addTimeButton, viewPastTimesButton;
+    // image buttons for play/pause and stop
+    private ImageButton playPauseBtn;
+    private ImageButton stopBtn;
+    // history button (text)
+    private Button historyButton;
+
     private ScrollView actionLogScroll;
     private LinearLayout actionLogContainer;
 
@@ -51,7 +67,7 @@ public class TimerPage extends AppCompatActivity {
     private boolean isRunning = false;
     private boolean hasEverRun = false;
 
-    //real-time storing
+    // real-time storing
     private long baseTimeMs = 0L; // Real time at last start/resume
     private long totalActiveBeforeResume = 0L;
 
@@ -68,7 +84,6 @@ public class TimerPage extends AppCompatActivity {
 
     private SharedPreferences prefs;
     private SimpleDateFormat logDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
-
 
     // measure run intervals
     private long lastResumeMs = 0L;
@@ -90,7 +105,6 @@ public class TimerPage extends AppCompatActivity {
         }
     };
 
-
     // Database
     private HelperAppDatabase db;
     private String currentUserId = "-1";
@@ -106,57 +120,86 @@ public class TimerPage extends AppCompatActivity {
         SharedPreferences sessionPrefs = getSharedPreferences("UserSession", MODE_PRIVATE);
         currentUserId = sessionPrefs.getString("loggedInPin", "-1");
 
-        // Find UI
-        backButton = findViewById(R.id.back_button_bottom);
+        // Find UI (match ids from timer_page.xml)
         timerDisplay = findViewById(R.id.timer_display);
-        toggleTimerButton = findViewById(R.id.toggle_timer_button);
-        addTimeButton = findViewById(R.id.add_time_button);
-        viewPastTimesButton = findViewById(R.id.view_past_times_button);
+
+        // ImageButtons
+        playPauseBtn = findViewById(R.id.play_pause_button);
+        stopBtn = findViewById(R.id.stop_button);
+
+        // Back and History
+        backButton = findViewById(R.id.back_button);
+        historyButton = findViewById(R.id.history_button);
+
+        // Hidden action log references (may be gone visually, but kept for code)
         actionLogScroll = findViewById(R.id.action_log_scroll);
         actionLogContainer = findViewById(R.id.action_log_container);
 
-        timerDisplay.setText("00:00:00.000");
-        toggleTimerButton.setText("Start");
+        // Initialize display text
+        timerDisplay.setText(getString(R.string.timer_default_text)); // use string resource
 
-        backButton.setOnClickListener(v -> finish());
-        toggleTimerButton.setOnClickListener(v -> handleToggleButton());
-        addTimeButton.setOnClickListener(v -> finalizeAndSave());
-        viewPastTimesButton.setOnClickListener(v ->
-                startActivity(new android.content.Intent(this, TimerHistoryPage.class))
-        );
+        // Wire UI events
 
-        // Initialize class prefs field (PREFS_TIMER must be declared as a class constant)
+        // Back = finish
+        if (backButton != null) {
+            backButton.setOnClickListener(v -> finish());
+        }
+
+        // Play / Pause toggle
+        if (playPauseBtn != null) {
+            playPauseBtn.setOnClickListener(v -> {
+                if (!hasEverRun) {
+                    // start
+                    startTimer();
+                    hasEverRun = true;
+                    // show pause icon if you added it
+                    try {
+                        playPauseBtn.setImageResource(R.drawable.ic_pause_white);
+                    } catch (Exception ignored) {}
+                    appendActionLog("Timer started at " + getCurrentTimeString());
+                } else if (isRunning) {
+                    // pause
+                    pauseTimer();
+                    try {
+                        playPauseBtn.setImageResource(R.drawable.ic_play_white);
+                    } catch (Exception ignored) {}
+                    appendActionLog("Timer paused at " + getCurrentTimeString());
+                } else {
+                    // resume
+                    resumeTimer();
+                    try {
+                        playPauseBtn.setImageResource(R.drawable.ic_pause_white);
+                    } catch (Exception ignored) {}
+                    appendActionLog("Timer resumed at " + getCurrentTimeString());
+                }
+            });
+        }
+
+        // Stop/Save button: call existing finalizeAndSave()
+        if (stopBtn != null) {
+            stopBtn.setOnClickListener(v -> {
+                if (isRunning) {
+                    pauseTimer();
+                    if (playPauseBtn != null) {
+                        try { playPauseBtn.setImageResource(R.drawable.ic_play_white); } catch (Exception ignored) {}
+                    }
+                }
+                finalizeAndSave();
+            });
+        }
+
+        // History button: open TimerHistoryPage
+        if (historyButton != null) {
+            historyButton.setOnClickListener(v ->
+                    startActivity(new Intent(this, TimerHistoryPage.class))
+            );
+        }
+
+        // Initialize class prefs field
         prefs = getSharedPreferences(PREFS_TIMER, MODE_PRIVATE);
 
         // Restore state (do this after prefs is initialized)
         restoreTimerState();
-    }
-
-
-    private void handleToggleButton() {
-        if (!hasEverRun) {
-            // START
-            startTimer();
-            hasEverRun = true;
-            toggleTimerButton.setText("Pause");
-            appendActionLog("User started timer at " + getCurrentTimeString());
-
-        } else if (isRunning) {
-            // PAUSE
-            pauseTimer();
-            long runInterval = System.currentTimeMillis() - lastResumeMs;
-            appendActionLog("User paused at " + getCurrentTimeString()
-                    + " after " + formatElapsed(runInterval) + " run");
-            toggleTimerButton.setText("Resume");
-
-        } else {
-            // RESUME
-            resumeTimer();
-            long pausedInterval = System.currentTimeMillis() - lastPauseMs;
-            appendActionLog("User resumed at " + getCurrentTimeString()
-                    + " after " + formatElapsed(pausedInterval) + " paused");
-            toggleTimerButton.setText("Pause");
-        }
     }
 
     private void startTimer() {
@@ -175,7 +218,17 @@ public class TimerPage extends AppCompatActivity {
             intervals.add(new long[]{ now, -1 });
 
             timerHandler.post(timerRunnable);
+        } else if (!isRunning && hasEverRun) {
+            // start/resume when there are previous intervals
+            isRunning = true;
+            long now = System.currentTimeMillis();
+            baseTimeMs = now;
+            lastResumeMs = now;
+            intervals.add(new long[]{ now, -1 });
+            timerHandler.post(timerRunnable);
         }
+        saveTimerState();
+        refreshIntervalsUI();
     }
 
     private void pauseTimer() {
@@ -204,6 +257,8 @@ public class TimerPage extends AppCompatActivity {
             intervals.add(new long[]{ now, -1 });
             timerHandler.post(timerRunnable);
         }
+        saveTimerState();
+        refreshIntervalsUI();
     }
 
     private void finalizeAndSave() {
@@ -233,16 +288,20 @@ public class TimerPage extends AppCompatActivity {
 
         // Insert into DB
         new Thread(() -> {
-            HelperTimerEvent event = new HelperTimerEvent();
-            event.userId = currentUserId;
-            event.startTimestamp = intervals.get(0)[0];
-            event.totalTimeMs = totalActiveMs;
-            event.intervalsJson = intervalsJson;
-            event.notes = "";
-            event.actionLog = finalActionLog;
-            event.eventName = "Timer Event"; // default name if not renamed
+            try {
+                HelperTimerEvent event = new HelperTimerEvent();
+                event.userId = currentUserId;
+                event.startTimestamp = (intervals.size() > 0) ? intervals.get(0)[0] : System.currentTimeMillis();
+                event.totalTimeMs = totalActiveMs;
+                event.intervalsJson = intervalsJson;
+                event.notes = "";
+                event.actionLog = finalActionLog;
+                event.eventName = "Timer Event"; // default name if not renamed
 
-            db.timerEventDao().insert(event);
+                db.timerEventDao().insert(event);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
         }).start();
 
         Toast.makeText(this, "Timer saved (" + formatElapsed(totalActiveMs) + ")", Toast.LENGTH_SHORT).show();
@@ -294,37 +353,46 @@ public class TimerPage extends AppCompatActivity {
         intervals.clear();
         actionLogMessages.clear();
 
-        timerDisplay.setText("00:00:00.000");
-        toggleTimerButton.setText("Start");
-        actionLogContainer.removeAllViews();
+        timerDisplay.setText(getString(R.string.timer_default_text));
+        try {
+            if (playPauseBtn != null) playPauseBtn.setImageResource(R.drawable.ic_play_white);
+        } catch (Exception ignored) {}
+        if (actionLogContainer != null) actionLogContainer.removeAllViews();
         clearSavedTimerState();
     }
 
     private void appendActionLog(String msg) {
         actionLogMessages.add(msg);
-        TextView tv = new TextView(this);
-        tv.setText(msg);
-        tv.setTextSize(14f);
-        actionLogContainer.addView(tv);
-
-        actionLogScroll.post(() -> actionLogScroll.fullScroll(View.FOCUS_DOWN));
+        if (actionLogContainer != null) {
+            TextView tv = new TextView(this);
+            tv.setText(msg);
+            tv.setTextSize(14f);
+            tv.setTextColor(Color.WHITE);
+            actionLogContainer.addView(tv);
+        }
+        if (actionLogScroll != null) {
+            actionLogScroll.post(() -> actionLogScroll.fullScroll(View.FOCUS_DOWN));
+        }
     }
 
     private String getCurrentTimeString() {
         // This is just for display, no effect on intervals
-        SimpleDateFormat sdf = new SimpleDateFormat("h:mm:ss a");
+        SimpleDateFormat sdf = new SimpleDateFormat("h:mm:ss a", Locale.getDefault());
         return sdf.format(new Date());
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        // If app resumes and was running, ensure handler is active
+        if (isRunning) startHandlerIfNeeded();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
         saveTimerState();
+        timerHandler.removeCallbacks(timerRunnable);
     }
 
     private void saveTimerState() {
@@ -370,13 +438,15 @@ public class TimerPage extends AppCompatActivity {
 
             // If it was running when persisted, restart the handler using lastResumeMs
             if (isRunning) {
-                // If it was running when persisted, restore lastResumeMs and restart handler.
-                // We keep totalActiveBeforeResume as stored and rely on getTotalActiveMs() for display.
                 startHandlerIfNeeded();
                 appendActionLog("Restored running timer from saved state (" + formatElapsed(getTotalActiveMs()) + ")");
-                toggleTimerButton.setText("Pause");
+                try {
+                    if (playPauseBtn != null) playPauseBtn.setImageResource(R.drawable.ic_pause_white);
+                } catch (Exception ignored) {}
             } else {
-                toggleTimerButton.setText(hasEverRun ? "Resume" : "Start");
+                try {
+                    if (playPauseBtn != null) playPauseBtn.setImageResource(R.drawable.ic_play_white);
+                } catch (Exception ignored) {}
             }
             // update UI list of intervals
             refreshIntervalsUI();
@@ -512,7 +582,7 @@ public class TimerPage extends AppCompatActivity {
         // If you have a UI container for listing intervals, update it; otherwise update actionLog with summary
         // We'll append a summary entry at top of action log
         if (actionLogContainer == null) return;
-        // Remove any previous "Intervals:" header (simple approach: clear and re-add actionLogMessages)
+        // Remove any previous contents and re-add actionLogMessages only
         actionLogContainer.removeAllViews();
         for (String msg : actionLogMessages) {
             TextView tv = new TextView(this);
@@ -521,27 +591,10 @@ public class TimerPage extends AppCompatActivity {
             tv.setTextColor(Color.WHITE);
             actionLogContainer.addView(tv);
         }
-        // Add a short intervals summary
-        TextView header = new TextView(this);
-        header.setText("Intervals (" + intervals.size() + "):");
-        header.setTextSize(12f);
-        header.setPadding(0,8,0,4);
-        header.setTypeface(null, Typeface.BOLD);
-        header.setTextColor(Color.LTGRAY);
-        actionLogContainer.addView(header, 0); // add at top
-        // Add each interval line
-        for (int i = 0; i < intervals.size(); i++) {
-            long[] iv = intervals.get(i);
-            long s = iv[0];
-            long e = iv[1];
-            String sStr = s > 0 ? logDateFormat.format(new Date(s)) : "unknown";
-            String dStr = (e > 0 && s > 0) ? formatElapsed(e - s) : (isRunning && i == intervals.size()-1 ? "running..." : "open");
-            TextView tv = new TextView(this);
-            tv.setText((i+1) + ". " + sStr + "  —  " + dStr);
-            tv.setTextSize(12f);
-            tv.setTextColor(Color.WHITE);
-            actionLogContainer.addView(tv, 1 + i); // after header
-        }
+
+        // NOTE: intentionally **not** adding an "Intervals (...)" header nor interval detail rows
+        // This removes the "Intervals (1):" text you saw.
+
         // scroll to bottom (existing method you have)
         final ScrollView sv = actionLogScroll;
         if (sv != null) {
@@ -549,9 +602,7 @@ public class TimerPage extends AppCompatActivity {
         }
     }
 
-
     private void clearSavedTimerState() {
         prefs.edit().clear().apply();
     }
-
 }

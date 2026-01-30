@@ -58,6 +58,14 @@
         <item>30</item>
     </string-array>
 
+    <string name="timer_default_text">00:00</string>
+    <string name="play_pause_cd">Play/Pause</string>
+    <string name="stop_save_cd">Stop/Save</string>
+    <string name="back">Back</string>
+    <string name="history">History</string>
+    <string name="see_past_times">See Past Times</string>
+
+
     <string name="our_mission">Our Mission</string>
 
     <string name="mission_text">To improve the quality of life and care for people with Sturge-Weber syndrome and associated Port-Wine Birthmark conditions through tenacious collaboration with clinical partners and pioneers, education, advocacy, research, and friendly support.</string>

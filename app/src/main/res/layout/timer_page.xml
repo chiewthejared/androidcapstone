@@ -1,109 +1,141 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+<androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/timer_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/white" >
+    android:background="@android:color/white"
+    tools:context=".TimerPage">
 
-    <!-- Header with two colors -->
-    <LinearLayout
-        android:id="@+id/header_bar"
-        android:layout_width="match_parent"
-        android:layout_height="47dp"
-        android:orientation="horizontal">
-
-        <!-- Left half: gold -->
-        <View
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="#FFD700" />
-
-        <!-- Right half: dark red -->
-        <View
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="#8B0000" />
-    </LinearLayout>
-
-    <Button
-        android:id="@+id/back_button_bottom"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentStart="true"
-        android:text="Back"
-        android:layout_marginBottom="16dp"
+    <!-- Back button (top-left, iOS style) -->
+    <ImageButton
+        android:id="@+id/back_button"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:src="@drawable/ic_back_arrow"
+        android:contentDescription="@string/back"
+        app:tint="@android:color/black"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginTop="16dp"
         android:layout_marginStart="16dp" />
 
-    <!-- Timer display near top, below header -->
-    <TextView
-        android:id="@+id/timer_display"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/header_bar"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="16dp"
-        android:text="00:00:00.000"
-        android:textSize="32sp"
-        android:textStyle="bold" />
+    <!-- Circular ring (just a styled FrameLayout) -->
+    <FrameLayout
+        android:id="@+id/ring_container"
+        android:layout_width="260dp"
+        android:layout_height="260dp"
+        android:layout_marginTop="48dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:ignore="MergeRootFrame">
 
-    <!-- The rectangular scrolling box for action logs -->
+        <!-- ring background (stroke) -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/circle_ring_bg" />
+
+        <!-- centered time -->
+        <TextView
+            android:id="@+id/timer_display"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/timer_default_text"
+            android:textSize="36sp"
+            android:textStyle="bold"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:textColor="@android:color/black" />
+    </FrameLayout>
+
+    <!-- HIDDEN action log area (kept for code; visibility gone) -->
     <ScrollView
         android:id="@+id/action_log_scroll"
-        android:layout_width="match_parent"
-        android:layout_height="300dp"
-        android:layout_below="@id/timer_display"
-        android:layout_marginTop="12dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
-        android:fadeScrollbars="false"
-        android:clipToPadding="false">
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@id/ring_container"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
 
         <LinearLayout
             android:id="@+id/action_log_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical" >
-        </LinearLayout>
+            android:orientation="vertical" />
     </ScrollView>
 
-    <!-- Big circular toggle button (Start, Pause, Resume) near bottom center -->
-    <Button
-        android:id="@+id/toggle_timer_button"
-        android:layout_width="120dp"
-        android:layout_height="120dp"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="90dp"
-        android:background="@drawable/circle_button_bg"
-    android:text="Start"
-    android:textSize="16sp"
-    android:textStyle="bold"
-    android:gravity="center"
-    android:drawablePadding="4dp"
-    android:contentDescription="Start/Pause/Resume" />
-
-    <!-- "Add Time" button near bottom -->
-    <Button
-        android:id="@+id/add_time_button"
+    <!-- Controls row -->
+    <LinearLayout
+        android:id="@+id/controls_row"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:text="Add Time"
-        android:layout_marginBottom="16dp" />
+        android:orientation="horizontal"
+        android:layout_marginTop="24dp"
+        app:layout_constraintTop_toBottomOf="@id/ring_container"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
 
-    <!-- "See Past Times" button, if you want it on this screen too -->
+        <!-- Play/Pause button (dark big) -->
+        <ImageButton
+            android:id="@+id/play_pause_button"
+            android:layout_width="72dp"
+            android:layout_height="72dp"
+            android:src="@drawable/ic_play_white"
+            android:background="@drawable/circle_dark_bg"
+            android:scaleType="center"
+            android:contentDescription="@string/play_pause_cd"
+            app:tint="@android:color/white"
+            android:layout_marginEnd="24dp" />
+
+        <!-- Stop / Save button (light) -->
+        <ImageButton
+            android:id="@+id/stop_button"
+            android:layout_width="68dp"
+            android:layout_height="68dp"
+            android:background="@drawable/circle_light_bg"
+            android:contentDescription="@string/stop_save_cd"
+            android:scaleType="center"
+            android:src="@drawable/ic_stop_grey"
+            app:tint="#444444" />
+    </LinearLayout>
+
+    <!-- History button -->
+    <Button
+        android:id="@+id/history_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/history"
+        android:textAllCaps="false"
+        app:layout_constraintTop_toBottomOf="@id/controls_row"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="24dp" />
+
+    <!-- Keep an invisible legacy button references if other code expects them -->
     <Button
         android:id="@+id/view_past_times_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_marginBottom="16dp"
-        android:layout_alignParentEnd="true"
-        android:text="See Past Times"
-        android:layout_marginEnd="16dp" />
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:text="@string/see_past_times" />
 
-</RelativeLayout>
+    <!-- Optional: bottom nav placeholder (if your app has bottom nav) -->
+    <View
+        android:id="@+id/bottom_nav_placeholder"
+        android:layout_width="0dp"
+        android:layout_height="56dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:background="@android:color/transparent"
+        android:visibility="visible" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
