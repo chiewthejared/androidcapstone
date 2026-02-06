@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- circle_button_outline.xml -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="oval">
+    <!-- no <size> so drawable scales to button view size -->
+    <solid android:color="#FFFFFFFF"/>             <!-- white fill -->
+    <stroke android:width="2dp" android:color="#BDBDBD"/>  <!-- grey outline -->
+    <corners android:radius="36dp"/>               <!-- keeps it circular -->
+</shape>

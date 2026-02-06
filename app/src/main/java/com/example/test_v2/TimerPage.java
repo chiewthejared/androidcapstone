@@ -39,7 +39,7 @@ import java.util.Locale;
 /**
  * TimerPage activity — unified, compiled version.
  * Uses the layout ids:
- *  - R.id.timer_display
+ *  - R.id.timer_display or R.id.timer_text (use whichever your XML uses)
  *  - R.id.play_pause_button
  *  - R.id.stop_button
  *  - R.id.back_button
@@ -47,16 +47,16 @@ import java.util.Locale;
  *  - R.id.action_log_scroll
  *  - R.id.action_log_container
  *
- * Keeps the original timer logic, intervals persistence and DB saving (finalizeAndSave()).
+ * Modified to use Button for play/pause and stop (text labels) instead of ImageButton icons.
  */
 public class TimerPage extends AppCompatActivity {
 
     // UI elements
     private ImageButton backButton;
     private TextView timerDisplay;
-    // image buttons for play/pause and stop
-    private ImageButton playPauseBtn;
-    private ImageButton stopBtn;
+    // Buttons for play/pause and stop (previously ImageButton)
+    private Button playPauseBtn;
+    private Button stopBtn;
     // history button (text)
     private Button historyButton;
 
@@ -121,11 +121,14 @@ public class TimerPage extends AppCompatActivity {
         currentUserId = sessionPrefs.getString("loggedInPin", "-1");
 
         // Find UI (match ids from timer_page.xml)
+        // Note: your XML earlier used timer_text — if you updated to timer_display keep this; otherwise change to timer_text.
         timerDisplay = findViewById(R.id.timer_display);
 
-        // ImageButtons
+        // Buttons (previously ImageButtons)
         playPauseBtn = findViewById(R.id.play_pause_button);
         stopBtn = findViewById(R.id.stop_button);
+        stopBtn.setBackgroundTintList(null);
+        playPauseBtn.setBackgroundTintList(null);
 
         // Back and History
         backButton = findViewById(R.id.back_button);
@@ -152,23 +155,23 @@ public class TimerPage extends AppCompatActivity {
                     // start
                     startTimer();
                     hasEverRun = true;
-                    // show pause icon if you added it
+                    // switch to "Pause" text
                     try {
-                        playPauseBtn.setImageResource(R.drawable.ic_pause_white);
+                        playPauseBtn.setText("Pause");
                     } catch (Exception ignored) {}
                     appendActionLog("Timer started at " + getCurrentTimeString());
                 } else if (isRunning) {
                     // pause
                     pauseTimer();
                     try {
-                        playPauseBtn.setImageResource(R.drawable.ic_play_white);
+                        playPauseBtn.setText("Start");
                     } catch (Exception ignored) {}
                     appendActionLog("Timer paused at " + getCurrentTimeString());
                 } else {
                     // resume
                     resumeTimer();
                     try {
-                        playPauseBtn.setImageResource(R.drawable.ic_pause_white);
+                        playPauseBtn.setText("Pause");
                     } catch (Exception ignored) {}
                     appendActionLog("Timer resumed at " + getCurrentTimeString());
                 }
@@ -181,7 +184,7 @@ public class TimerPage extends AppCompatActivity {
                 if (isRunning) {
                     pauseTimer();
                     if (playPauseBtn != null) {
-                        try { playPauseBtn.setImageResource(R.drawable.ic_play_white); } catch (Exception ignored) {}
+                        try { playPauseBtn.setText("Start"); } catch (Exception ignored) {}
                     }
                 }
                 finalizeAndSave();
@@ -197,6 +200,10 @@ public class TimerPage extends AppCompatActivity {
 
         // Initialize class prefs field
         prefs = getSharedPreferences(PREFS_TIMER, MODE_PRIVATE);
+
+        // Ensure initial button text (safe default)
+        if (playPauseBtn != null) playPauseBtn.setText("Start");
+        if (stopBtn != null) stopBtn.setText("Stop");
 
         // Restore state (do this after prefs is initialized)
         restoreTimerState();
@@ -329,16 +336,25 @@ public class TimerPage extends AppCompatActivity {
         return sb.toString();
     }
 
+    /**
+     * Format elapsed milliseconds as HH:MM:SS:CS (CS = centiseconds, 00..99)
+     * Example: 1 hour, 2 minutes, 3 seconds and 450 ms -> "01:02:03:45"
+     */
     private String formatElapsed(long ms) {
         long totalMs = ms;
-        long sec = totalMs / 1000;
-        long milli = totalMs % 1000;
-        long min = sec / 60;
-        long hrs = min / 60;
-        sec = sec % 60;
-        min = min % 60;
-        return String.format(Locale.getDefault(), "%02d:%02d:%02d.%03d", hrs, min, sec, milli);
+        // seconds and millisecond remainder
+        long totalSec = totalMs / 1000L;          // integer seconds
+        long msRemainder = totalMs % 1000L;       // 0..999 ms
+        // compute centiseconds (hundredths) from milliseconds
+        long centis = msRemainder / 10L;          // 0..99 (e.g. 450 ms -> 45)
+        // compute hours, minutes, seconds
+        long secs = totalSec % 60L;               // 0..59
+        long totalMin = totalSec / 60L;
+        long mins = totalMin % 60L;               // 0..59
+        long hrs = totalMin / 60L;                // hours (can grow beyond 24 if needed)
+        return String.format(Locale.getDefault(), "%02d:%02d:%02d:%02d", hrs, mins, secs, centis);
     }
+
 
     private void resetTimer() {
         timerHandler.removeCallbacks(timerRunnable);
@@ -355,7 +371,7 @@ public class TimerPage extends AppCompatActivity {
 
         timerDisplay.setText(getString(R.string.timer_default_text));
         try {
-            if (playPauseBtn != null) playPauseBtn.setImageResource(R.drawable.ic_play_white);
+            if (playPauseBtn != null) playPauseBtn.setText("Start");
         } catch (Exception ignored) {}
         if (actionLogContainer != null) actionLogContainer.removeAllViews();
         clearSavedTimerState();
@@ -441,11 +457,11 @@ public class TimerPage extends AppCompatActivity {
                 startHandlerIfNeeded();
                 appendActionLog("Restored running timer from saved state (" + formatElapsed(getTotalActiveMs()) + ")");
                 try {
-                    if (playPauseBtn != null) playPauseBtn.setImageResource(R.drawable.ic_pause_white);
+                    if (playPauseBtn != null) playPauseBtn.setText("Pause");
                 } catch (Exception ignored) {}
             } else {
                 try {
-                    if (playPauseBtn != null) playPauseBtn.setImageResource(R.drawable.ic_play_white);
+                    if (playPauseBtn != null) playPauseBtn.setText("Start");
                 } catch (Exception ignored) {}
             }
             // update UI list of intervals

@@ -4,4 +4,5 @@
     <color name="white">#FFFFFFFF</color>
     <color name="teal">#018786</color>
     <color name="forest_green">#0b3533</color> <!-- Hex for forest green -->
+    <color name="dark_green">#0B3B33</color>
 </resources>
