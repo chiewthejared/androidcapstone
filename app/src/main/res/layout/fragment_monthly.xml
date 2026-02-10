@@ -1,67 +1,115 @@
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/rootMonthly"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@android:color/white"
     android:padding="16dp">
 
-    <!-- Month and Year Header -->
-    <LinearLayout
-        android:orientation="horizontal"
-        android:gravity="center"
+    <!-- Top title -->
+    <TextView
+        android:id="@+id/tvHeaderTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp">
+        android:text="Health Tracker"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        android:textColor="#111827" />
 
-        <Button
+    <!-- Month row: prev / monthYearText / next -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp">
+
+        <ImageButton
             android:id="@+id/prevMonthButton"
-            android:text="Prev"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@android:color/transparent"
+            android:src="@android:drawable/ic_media_previous"
+            android:contentDescription="Previous month" />
 
         <TextView
             android:id="@+id/monthYearText"
             android:layout_width="0dp"
+            android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="March 2025"
+            android:gravity="center"
+            android:text="January 2026"
             android:textSize="18sp"
             android:textStyle="bold"
-            android:gravity="center"
-            android:padding="8dp"
-            android:clickable="true"
-            android:focusable="true" android:layout_height="wrap_content"/>
+            android:textColor="#111827" />
 
-        <Button
+        <ImageButton
             android:id="@+id/nextMonthButton"
-            android:text="Next"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@android:color/transparent"
+            android:src="@android:drawable/ic_media_next"
+            android:contentDescription="Next month" />
     </LinearLayout>
 
-    <!-- Days of the Week Header -->
-    <GridLayout
+    <!-- Weekday header -->
+    <LinearLayout
+        android:id="@+id/weekdayRow"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:columnCount="7"
-        android:rowCount="1"
-        android:layout_marginBottom="4dp">
+        android:orientation="horizontal"
+        android:gravity="center">
 
-        <!-- Repeat for all 7 days -->
-        <TextView android:text="Sun" style="@style/DayHeaderStyle"/>
-        <TextView android:text="Mon" style="@style/DayHeaderStyle"/>
-        <TextView android:text="Tue" style="@style/DayHeaderStyle"/>
-        <TextView android:text="Wed" style="@style/DayHeaderStyle"/>
-        <TextView android:text="Thu" style="@style/DayHeaderStyle"/>
-        <TextView android:text="Fri" style="@style/DayHeaderStyle"/>
-        <TextView android:text="Sat" style="@style/DayHeaderStyle"/>
-    </GridLayout>
+        <!-- 7 labels -->
+        <TextView style="@style/MonthlyWeekday" android:text="SU"/>
+        <TextView style="@style/MonthlyWeekday" android:text="MO"/>
+        <TextView style="@style/MonthlyWeekday" android:text="TU"/>
+        <TextView style="@style/MonthlyWeekday" android:text="WE"/>
+        <TextView style="@style/MonthlyWeekday" android:text="TH"/>
+        <TextView style="@style/MonthlyWeekday" android:text="FR"/>
+        <TextView style="@style/MonthlyWeekday" android:text="SA"/>
+    </LinearLayout>
 
-    <!-- Calendar Grid -->
+    <!-- Calendar grid -->
     <GridView
         android:id="@+id/calendarGrid"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:numColumns="7"
-        android:verticalSpacing="8dp"
-        android:horizontalSpacing="8dp"/>
+        android:horizontalSpacing="6dp"
+        android:verticalSpacing="6dp"
+        android:stretchMode="columnWidth"
+        android:paddingTop="10dp"
+        android:paddingBottom="8dp"
+        android:gravity="center"
+        android:overScrollMode="never" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#E5E7EB"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="10dp"/>
+
+    <!-- Logs title -->
+    <TextView
+        android:id="@+id/tvLogsTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Today's Logs"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:textColor="#111827"
+        android:layout_marginBottom="8dp"/>
+
+    <!-- Logs list -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvLogs"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:overScrollMode="never"/>
 </LinearLayout>
