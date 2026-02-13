@@ -1,86 +1,133 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/scroll_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
+    android:fillViewport="true"
     android:background="@android:color/white">
 
-    <!-- Header -->
     <LinearLayout
+        android:id="@+id/main_container"
+        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:padding="16dp">
 
-        <View
-            android:layout_width="0dp"
-            android:layout_height="47dp"
-            android:layout_weight="1"
-            android:background="#FFD700" /> <!-- Gold color -->
+        <!-- Page Title -->
+        <TextView
+            android:id="@+id/page_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/videos_articles"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:textColor="#444444"
+            android:gravity="center"
+            android:paddingBottom="16dp"/>
 
-        <View
-            android:layout_width="0dp"
-            android:layout_height="47dp"
-            android:layout_weight="1"
-            android:background="#8B0000" /> <!-- Magenta color -->
+        <!-- Filter Buttons -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_marginBottom="16dp">
 
+            <Button
+                android:id="@+id/button_articles"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/rounded_maroon"
+                android:text="@string/articles"
+                android:textColor="#FFD600"
+                android:textStyle="bold"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+                android:layout_marginEnd="8dp"/>
+
+            <Button
+                android:id="@+id/button_videos"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/rounded_maroon"
+                android:text="@string/videos"
+                android:textColor="#FFD600"
+                android:textStyle="bold"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+                android:layout_marginEnd="8dp"/>
+
+            <Button
+                android:id="@+id/button_all"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/rounded_maroon"
+                android:text="@string/all"
+                android:textColor="#FFD600"
+                android:textStyle="bold"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"/>
+        </LinearLayout>
+
+        <!-- SECTION 1: YouTube -->
+        <LinearLayout
+            android:id="@+id/youtube_section"
+            android:layout_width="match_parent"
+            android:layout_height="300dp"
+            android:orientation="vertical"
+            android:layout_marginBottom="20dp">
+
+            <TextView
+                android:id="@+id/youtube_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/youtube_label"
+                android:textStyle="bold"
+                android:textColor="#444444"
+                android:paddingBottom="8dp"/>
+
+            <FrameLayout
+                android:id="@+id/youtube_container"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="#F2F2F2"/>
+        </LinearLayout>
+
+        <!-- SECTION 2: Articles -->
+        <LinearLayout
+            android:id="@+id/articles_section"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginBottom="20dp">
+
+            <TextView
+                android:id="@+id/articles_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/articles"
+                android:textStyle="bold"
+                android:textColor="#444444"
+                android:paddingBottom="8dp"/>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/articles_recycler"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="200dp" />
+        </LinearLayout>
+
+        <!-- Back Button (Timer Style Pill) -->
+        <Button
+            android:id="@+id/back_button"
+            android:layout_width="140dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:background="@drawable/rounded_green_pill"
+            android:text="@string/back_articles"
+            android:textColor="#FFFFFF"
+            android:textStyle="bold"
+            android:layout_marginTop="10dp"/>
     </LinearLayout>
 
-    <!-- Search Bar -->
-    <EditText
-        android:id="@+id/search_bar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Search for content..."
-        android:padding="10dp"
-        android:background="@android:color/white"
-        android:textSize="16sp"
-        android:drawableStart="@android:drawable/ic_menu_search"/>
-
-    <!-- Toggle Buttons -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center"
-        android:padding="8dp">
-
-        <Button
-            android:id="@+id/button_articles"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Articles" />
-
-        <Button
-            android:id="@+id/button_videos"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Videos"
-            android:layout_marginStart="10dp" />
-
-        <Button
-            android:id="@+id/button_all"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="All"
-            android:layout_marginStart="10dp" />
-
-    </LinearLayout>
-
-    <!-- RecyclerView for Articles/Videos -->
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/articles_videos_recycler_view"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:padding="10dp" />
-
-    <!-- Back Button -->
-    <Button
-        android:id="@+id/back_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Back"
-        android:layout_gravity="center"
-        android:layout_marginBottom="10dp" />
-
-</LinearLayout>
+</ScrollView>

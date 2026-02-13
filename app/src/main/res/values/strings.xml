@@ -1,65 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
+
+    <!-- App -->
     <string name="app_name">test_V2</string>
     <string name="article_image">Article image</string>
-    <string-array name="edit_event_options">
-        <item>Just this event</item>
-        <item>All repeating events</item>
-    </string-array>
 
-    <!-- Medication Form Options -->
-    <string-array name="medication_forms">
-        <item>Pill</item>
-        <item>Liquid</item>
-        <item>Injection</item>
-        <item>Eye Drop</item>
-        <item>Other</item>
-    </string-array>
-
-    <!-- Medication Time Options -->
-    <string-array name="medication_times">
-        <item>Morning (AM)</item>
-        <item>Afternoon</item>
-        <item>Evening (PM)</item>
-        <item>Night</item>
-        <item>Custom Time</item>
-    </string-array>
-
-    <!-- Refill Number Options -->
-    <string-array name="refill_numbers">
-        <item>1</item>
-        <item>2</item>
-        <item>3</item>
-        <item>4</item>
-        <item>5</item>
-        <item>6</item>
-        <item>7</item>
-        <item>8</item>
-        <item>9</item>
-        <item>10</item>
-        <item>11</item>
-        <item>12</item>
-        <item>13</item>
-        <item>14</item>
-        <item>15</item>
-        <item>16</item>
-        <item>17</item>
-        <item>18</item>
-        <item>19</item>
-        <item>20</item>
-        <item>21</item>
-        <item>22</item>
-        <item>23</item>
-        <item>24</item>
-        <item>25</item>
-        <item>26</item>
-        <item>27</item>
-        <item>28</item>
-        <item>29</item>
-        <item>30</item>
-    </string-array>
+    <!-- Generic -->
+    <string name="back">Back</string>
 
     <!-- Timer Page -->
-    <string name="back">Back</string>
     <string name="timer_default_text">00:00</string>
     <string name="start">Start</string>
     <string name="pause">Pause</string>
@@ -71,9 +20,48 @@
     <string name="add_to_calendar">Add to Calendar</string>
     <string name="delete">Delete</string>
 
+    <!-- Articles/Videos Page -->
+    <string name="videos_articles">Videos &amp; Articles</string>
+    <string name="articles">Articles</string>
+    <string name="videos">Videos</string>
+    <string name="all">All</string>
+    <string name="youtube_label">YouTube</string>
+    <!-- Use a unique name for this page's back button -->
+    <string name="back_articles">Back</string>
 
+    <!-- Mission -->
     <string name="our_mission">Our Mission</string>
-
     <string name="mission_text">To improve the quality of life and care for people with Sturge-Weber syndrome and associated Port-Wine Birthmark conditions through tenacious collaboration with clinical partners and pioneers, education, advocacy, research, and friendly support.</string>
+
+    <!-- Arrays (keep these if you still need them) -->
+    <string-array name="edit_event_options">
+        <item>Just this event</item>
+        <item>All repeating events</item>
+    </string-array>
+
+    <string-array name="medication_forms">
+        <item>Pill</item>
+        <item>Liquid</item>
+        <item>Injection</item>
+        <item>Eye Drop</item>
+        <item>Other</item>
+    </string-array>
+
+    <string-array name="medication_times">
+        <item>Morning (AM)</item>
+        <item>Afternoon</item>
+        <item>Evening (PM)</item>
+        <item>Night</item>
+        <item>Custom Time</item>
+    </string-array>
+
+    <string-array name="refill_numbers">
+        <item>1</item><item>2</item><item>3</item><item>4</item><item>5</item>
+        <item>6</item><item>7</item><item>8</item><item>9</item><item>10</item>
+        <item>11</item><item>12</item><item>13</item><item>14</item><item>15</item>
+        <item>16</item><item>17</item><item>18</item><item>19</item><item>20</item>
+        <item>21</item><item>22</item><item>23</item><item>24</item><item>25</item>
+        <item>26</item><item>27</item><item>28</item><item>29</item><item>30</item>
+    </string-array>
 
 </resources>

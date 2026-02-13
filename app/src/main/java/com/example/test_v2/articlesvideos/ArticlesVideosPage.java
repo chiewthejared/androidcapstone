@@ -3,10 +3,7 @@ package com.example.test_v2.articlesvideos;
 import android.app.Activity;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.widget.Button;
-import android.widget.EditText;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -20,7 +17,7 @@ public class ArticlesVideosPage extends Activity {
     private RecyclerView recyclerView;
     private ArticlesVideosAdapter adapter;
     private List<ArticleVideoItem> allItems = new ArrayList<>();
-    private EditText searchBar;
+    // private EditText searchBar; <-- removed
     private Button buttonArticles, buttonVideos, buttonAll, backButton;
     private String filterType = "all"; // Default to show all
 
@@ -29,8 +26,9 @@ public class ArticlesVideosPage extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.articles_videos_page);
 
-        recyclerView = findViewById(R.id.articles_videos_recycler_view);
-        searchBar = findViewById(R.id.search_bar);
+        // NOTE: layout updated to use new ids: articles_recycler etc.
+        recyclerView = findViewById(R.id.articles_recycler);
+        // searchBar = findViewById(R.id.search_bar); // removed
         buttonArticles = findViewById(R.id.button_articles);
         buttonVideos = findViewById(R.id.button_videos);
         buttonAll = findViewById(R.id.button_all);
@@ -38,98 +36,67 @@ public class ArticlesVideosPage extends Activity {
 
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        // Initialize adapter
+        // Initialize adapter with an empty list (we'll update it via adapter.updateList)
         adapter = new ArticlesVideosAdapter(new ArrayList<>(), this);
         recyclerView.setAdapter(adapter);
 
-        // Load data
+        // Load data into allItems
         loadArticlesVideos();
 
-        // Set button click listeners
+        // Set button click listeners — now call filterContent("") because there is no search bar
         buttonArticles.setOnClickListener(v -> {
             filterType = "article";
             updateButtonStyles();
-            filterContent(searchBar.getText().toString().trim());
+            filterContent("");
         });
 
         buttonVideos.setOnClickListener(v -> {
             filterType = "video";
             updateButtonStyles();
-            filterContent(searchBar.getText().toString().trim());
+            filterContent("");
         });
 
         buttonAll.setOnClickListener(v -> {
             filterType = "all";
             updateButtonStyles();
-            filterContent(searchBar.getText().toString().trim());
+            filterContent("");
         });
 
         backButton.setOnClickListener(v -> finish());
 
-        // Search Bar functionality
-        searchBar.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                filterContent(s.toString().trim());
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {}
-        });
+        // Removed Search Bar TextWatcher code (search bar removed)
 
         updateButtonStyles(); // Ensure correct styling on launch
         filterContent(""); // Initial load
     }
 
-    //THIS IS HOW YOU ADD NEW THINGS
+    // THIS IS HOW YOU ADD NEW THINGS
+    // inside ArticlesVideosPage.java — replace the entire loadArticlesVideos() method with this:
+
     private void loadArticlesVideos() {
         allItems.clear();
-
-        // Articles
-        allItems.add(new ArticleVideoItem(
-                "How to Improve Your Focus",
-                "A guide on enhancing concentration and productivity.",
-                "https://example.com/focus-guide",
-                "article"
-        ));
-
-        allItems.add(new ArticleVideoItem(
-                "The Future of AI",
-                "An in-depth look at how artificial intelligence is shaping our world.",
-                "https://example.com/ai-future",
-                "article"
-        ));
-
-        // Videos
-        allItems.add(new ArticleVideoItem(
-                "Understanding Neural Networks",
-                "A video explaining neural networks and how they work.",
-                "https://www.youtube.com/watch?v=aircAruvnKk",
-                "video"
-        ));
-
-        allItems.add(new ArticleVideoItem(
-                "Top 10 Space Discoveries",
-                "A documentary about the greatest discoveries in space.",
-                "https://www.youtube.com/watch?v=1dGOXY5O9uM",
-                "video"
-        ));
-
-        filterContent(""); // Apply filter
+        // Intentionally left empty — no demo articles or videos.
+        // If you want to load items later, add allItems.add(...) calls here.
+        // Ensure the adapter shows the current (empty) list:
+        filterContent("");
     }
+
 
     private void filterContent(String query) {
         if (adapter == null) return; // Prevent crash
 
         List<MatchResult> matchResults = new ArrayList<>();
-        String queryLower = query.toLowerCase();
+        String queryLower = (query == null) ? "" : query.toLowerCase();
 
         for (ArticleVideoItem item : allItems) {
             if (!filterType.equals("all") && !item.getType().equals(filterType)) {
                 continue; // Skip if it doesn't match the selected filter type
+            }
+
+            // If query is empty, include all items that passed the type filter.
+            if (queryLower.isEmpty()) {
+                matchResults.add(new MatchResult(item, 0));
+                continue;
             }
 
             String titleLower = item.getTitle().toLowerCase();
@@ -142,7 +109,13 @@ public class ArticlesVideosPage extends Activity {
             } else if (titleLower.contains(queryLower)) {
                 matchScore = 1;
             } else {
-                continue;
+                // If query provided and no match in title, try description
+                String descLower = (item.getDescription() == null) ? "" : item.getDescription().toLowerCase();
+                if (descLower.contains(queryLower)) {
+                    matchScore = 1;
+                } else {
+                    continue;
+                }
             }
 
             matchResults.add(new MatchResult(item, matchScore));
@@ -164,13 +137,24 @@ public class ArticlesVideosPage extends Activity {
     }
 
     private void updateButtonStyles() {
-        int selectedColor = Color.parseColor("#FFD700"); // Gold color for selected
-        int defaultColor = Color.parseColor("#D3D3D3"); // Light gray for default
+        // Selected vs unselected alpha for visual feedback
+        float selAlpha = 1.0f;
+        float unselAlpha = 0.85f;
 
-        buttonArticles.setBackgroundColor(filterType.equals("article") ? selectedColor : defaultColor);
-        buttonVideos.setBackgroundColor(filterType.equals("video") ? selectedColor : defaultColor);
-        buttonAll.setBackgroundColor(filterType.equals("all") ? selectedColor : defaultColor);
+        buttonArticles.setAlpha("article".equals(filterType) ? selAlpha : unselAlpha);
+        buttonVideos.setAlpha("video".equals(filterType) ? selAlpha : unselAlpha);
+        buttonAll.setAlpha("all".equals(filterType) ? selAlpha : unselAlpha);
+
+        // Ensure the filter buttons keep the yellow text color defined in layout (#FFD600)
+        int yellow = Color.parseColor("#eeb533");
+        buttonArticles.setTextColor(yellow);
+        buttonVideos.setTextColor(yellow);
+        buttonAll.setTextColor(yellow);
+
+        // Back button remains unchanged (green pill with white text defined in XML)
     }
+
+
 
     private static class MatchResult {
         ArticleVideoItem item;
