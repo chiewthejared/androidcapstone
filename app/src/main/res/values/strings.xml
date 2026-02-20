@@ -26,8 +26,10 @@
     <string name="videos">Videos</string>
     <string name="all">All</string>
     <string name="youtube_label">YouTube</string>
-    <!-- Use a unique name for this page's back button -->
+    <string name="play_in_youtube">Play in YouTube</string>
+    <string name="open_video">OPEN VIDEO</string>
     <string name="back_articles">Back</string>
+    <string name="open_link">Open Link</string>
 
     <!-- Mission -->
     <string name="our_mission">Our Mission</string>

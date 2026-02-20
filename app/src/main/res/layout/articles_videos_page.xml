@@ -19,19 +19,20 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/videos_articles"
-            android:textSize="20sp"
+            android:textSize="22sp"
             android:textStyle="bold"
-            android:textColor="#444444"
+            android:textColor="@color/port_wine"
             android:gravity="center"
             android:paddingBottom="16dp"/>
 
-        <!-- Filter Buttons -->
+        <!-- Filter buttons (top) -->
         <LinearLayout
+            android:id="@+id/top_filters"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:gravity="center"
-            android:layout_marginBottom="16dp">
+            android:layout_marginBottom="18dp">
 
             <Button
                 android:id="@+id/button_articles"
@@ -39,11 +40,12 @@
                 android:layout_height="wrap_content"
                 android:background="@drawable/rounded_maroon"
                 android:text="@string/articles"
-                android:textColor="#FFD600"
+                android:textColor="@color/golden_yellow"
+                android:textSize="16sp"
                 android:textStyle="bold"
-                android:paddingLeft="16dp"
-                android:paddingRight="16dp"
-                android:layout_marginEnd="8dp"/>
+                android:paddingLeft="18dp"
+                android:paddingRight="18dp"
+                android:layout_marginEnd="10dp"/>
 
             <Button
                 android:id="@+id/button_videos"
@@ -51,11 +53,12 @@
                 android:layout_height="wrap_content"
                 android:background="@drawable/rounded_maroon"
                 android:text="@string/videos"
-                android:textColor="#FFD600"
+                android:textColor="@color/golden_yellow"
+                android:textSize="16sp"
                 android:textStyle="bold"
-                android:paddingLeft="16dp"
-                android:paddingRight="16dp"
-                android:layout_marginEnd="8dp"/>
+                android:paddingLeft="18dp"
+                android:paddingRight="18dp"
+                android:layout_marginEnd="10dp"/>
 
             <Button
                 android:id="@+id/button_all"
@@ -63,71 +66,92 @@
                 android:layout_height="wrap_content"
                 android:background="@drawable/rounded_maroon"
                 android:text="@string/all"
-                android:textColor="#FFD600"
+                android:textColor="@color/golden_yellow"
+                android:textSize="16sp"
                 android:textStyle="bold"
-                android:paddingLeft="16dp"
-                android:paddingRight="16dp"/>
+                android:paddingLeft="18dp"
+                android:paddingRight="18dp"/>
         </LinearLayout>
 
-        <!-- SECTION 1: YouTube -->
-        <LinearLayout
-            android:id="@+id/youtube_section"
+        <!-- YOUTUBE Label (ID required by Java) -->
+        <TextView
+            android:id="@+id/youtube_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/youtube_label"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="@color/brand_green"
+            android:paddingBottom="8dp"/>
+
+        <!-- Placeholder for in-app YouTube player -->
+        <FrameLayout
+            android:id="@+id/permanent_player_container"
             android:layout_width="match_parent"
-            android:layout_height="300dp"
-            android:orientation="vertical"
-            android:layout_marginBottom="20dp">
+            android:layout_height="220dp"
+            android:background="#111111"
+            android:layout_marginBottom="10dp"/>
 
-            <TextView
-                android:id="@+id/youtube_label"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/youtube_label"
-                android:textStyle="bold"
-                android:textColor="#444444"
-                android:paddingBottom="8dp"/>
+        <!-- Fallback open in YouTube button -->
+        <Button
+            android:id="@+id/play_in_youtube_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/rounded_green_pill"
+            android:text="@string/play_in_youtube"
+            android:textColor="@android:color/white"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp"
+            android:layout_marginBottom="18dp"/>
 
-            <FrameLayout
-                android:id="@+id/youtube_container"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="#F2F2F2"/>
-        </LinearLayout>
+        <!-- LATEST VIDEOS Section -->
+        <TextView
+            android:id="@+id/latest_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Latest Videos"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="@color/brand_green"
+            android:paddingBottom="8dp"/>
 
-        <!-- SECTION 2: Articles -->
-        <LinearLayout
-            android:id="@+id/articles_section"
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/latest_videos_recycler"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_marginBottom="20dp">
+            android:layout_marginBottom="18dp"/>
 
-            <TextView
-                android:id="@+id/articles_label"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/articles"
-                android:textStyle="bold"
-                android:textColor="#444444"
-                android:paddingBottom="8dp"/>
+        <!-- ARTICLES Label (ID required by Java) -->
+        <TextView
+            android:id="@+id/articles_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/articles"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="@color/brand_green"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"/>
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/articles_recycler"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:minHeight="200dp" />
-        </LinearLayout>
+        <!-- articles recycler -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/articles_recycler"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
 
-        <!-- Back Button (Timer Style Pill) -->
+        <!-- Back Button -->
         <Button
             android:id="@+id/back_button"
-            android:layout_width="140dp"
+            android:layout_width="150dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
+            android:layout_marginTop="24dp"
             android:background="@drawable/rounded_green_pill"
             android:text="@string/back_articles"
-            android:textColor="#FFFFFF"
+            android:textColor="@android:color/white"
             android:textStyle="bold"
-            android:layout_marginTop="10dp"/>
+            android:textSize="16sp"/>
     </LinearLayout>
-
 </ScrollView>

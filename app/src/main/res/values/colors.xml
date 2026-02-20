@@ -3,7 +3,10 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="teal">#018786</color>
-    <color name="forest_green">#0b3533</color> <!-- Hex for forest green -->
+    <color name="forest_green">#0b3533</color>
     <color name="dark_green">#0B3B33</color>
     <color name="maroon_text">#eeb533</color>
+    <color name="port_wine">#8C1E41</color>
+    <color name="golden_yellow">#EEB533</color>
+    <color name="brand_green">#083533</color>
 </resources>
