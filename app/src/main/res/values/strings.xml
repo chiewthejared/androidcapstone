@@ -41,6 +41,14 @@
         <item>All repeating events</item>
     </string-array>
 
+    <!-- HomePage -->
+    <string name="share">Share</string>
+    <string name="welcome">Welcome</string>
+    <string name="john_doe">John Doe</string>
+    <string name="subtitle">Your care, learning, and tools — all in one place.</string>
+    <string name="tile_label">Label</string>
+    <string name="tile_icon_desc">Tile icon</string>
+
     <string-array name="medication_forms">
         <item>Pill</item>
         <item>Liquid</item>

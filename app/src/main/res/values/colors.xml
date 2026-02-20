@@ -9,4 +9,5 @@
     <color name="port_wine">#8C1E41</color>
     <color name="golden_yellow">#EEB533</color>
     <color name="brand_green">#083533</color>
+    <color name="tile_background_color">#33083533</color>
 </resources>
