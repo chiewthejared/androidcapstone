@@ -39,6 +39,7 @@ public class TilesAdapter extends RecyclerView.Adapter<TilesAdapter.TileViewHold
         TileItem item = items.get(position);
         holder.icon.setImageResource(item.getIconRes());
         holder.label.setText(item.getLabel());
+
         holder.itemView.setOnClickListener(v -> {
             if (listener != null) listener.onTileClick(position);
         });

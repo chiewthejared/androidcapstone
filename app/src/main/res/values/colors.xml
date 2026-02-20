@@ -9,5 +9,8 @@
     <color name="port_wine">#8C1E41</color>
     <color name="golden_yellow">#EEB533</color>
     <color name="brand_green">#083533</color>
-    <color name="tile_background_color">#33083533</color>
+    <color name="tile_background_translucent">#88FFFFFF</color>
+    <color name="tile_icon_color">#FFFFFFFF</color>
+    <color name="tile_label_color">#FFFFFFFF</color>
+    <color name="greeting_card_solid">#0B3B33</color>
 </resources>

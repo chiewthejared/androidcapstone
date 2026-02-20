@@ -1,38 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    app:cardCornerRadius="16dp"
-    app:cardElevation="4dp"
-    android:layout_margin="8dp"
-    app:strokeWidth="0dp"
-    android:foreground="?attr/selectableItemBackground"
-    app:cardBackgroundColor="@color/tile_background_color">
+    android:layout_margin="14dp"
+    app:cardCornerRadius="20dp"
+    app:cardElevation="6dp"
+    app:cardBackgroundColor="@color/tile_background_translucent"
+    app:strokeWidth="0dp">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="150dp"
+        android:layout_height="match_parent"
         android:orientation="vertical"
         android:gravity="center"
-        android:padding="12dp">
+        android:padding="18dp">
 
         <ImageView
             android:id="@+id/iv_icon"
-            android:layout_width="44dp"
-            android:layout_height="44dp"
-            android:contentDescription="@string/tile_icon_desc"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
             android:scaleType="centerInside"
-            app:tint="@android:color/white"
+            android:contentDescription="@string/tile_icon_desc"
+            app:tint="@color/tile_icon_color"
             android:src="@drawable/ic_calendar" />
 
         <TextView
             android:id="@+id/tv_label"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
             android:text="@string/tile_label"
-            android:textColor="#FFEFEF"
-            android:textSize="12sp"
-            android:layout_marginTop="10dp"/>
+            android:textColor="@color/tile_label_color"
+            android:textSize="15sp"
+            android:textStyle="normal"/>
     </LinearLayout>
+
 </com.google.android.material.card.MaterialCardView>

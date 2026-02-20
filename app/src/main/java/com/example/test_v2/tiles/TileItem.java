@@ -1,4 +1,4 @@
-package com.example.test_v2.tiles; // change if needed to match folder
+package com.example.test_v2.tiles;
 
 public class TileItem {
     private final int iconRes;
