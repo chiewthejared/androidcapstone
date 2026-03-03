@@ -19,25 +19,32 @@ import java.util.List;
 public class CalendarDayAdapter extends BaseAdapter {
     private final Context context;
     private final List<String> days;
-    private final List<String> eventDates;
+    private final List<String> eventDates;      // 蓝点：普通 event
+    private final List<String> seizureDates;    // 红点：癫痫
     private final LocalDate currentMonth;
     private final OnDayClickListener listener;
-
     private String selectedDate;
 
     public interface OnDayClickListener {
         void onDayClicked(String fullDate); // yyyy-M-d
     }
 
+    // 旧的三参数构造（向后兼容，seizureDates 为空）
     public CalendarDayAdapter(Context context, List<String> days, List<String> eventDates,
                               LocalDate currentMonth, OnDayClickListener listener) {
+        this(context, days, eventDates, null, currentMonth, listener);
+    }
+
+    // 新的五参数构造（支持红蓝两个点）
+    public CalendarDayAdapter(Context context, List<String> days, List<String> eventDates,
+                              List<String> seizureDates, LocalDate currentMonth,
+                              OnDayClickListener listener) {
         this.context = context;
         this.days = days;
         this.eventDates = eventDates;
+        this.seizureDates = seizureDates;
         this.currentMonth = currentMonth;
         this.listener = listener;
-
-        // 默认选中今天（如果不在本月，后面 MonthlyFragment 会覆盖）
         this.selectedDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-M-d"));
     }
 
@@ -58,14 +65,16 @@ public class CalendarDayAdapter extends BaseAdapter {
                 : LayoutInflater.from(context).inflate(R.layout.item_calendar_day, parent, false);
 
         TextView dayText = view.findViewById(R.id.calendarDayText);
-        View dot = view.findViewById(R.id.viewDot);
+        View dotBlue = view.findViewById(R.id.viewDotBlue);
+        View dotRed = view.findViewById(R.id.viewDotRed);
         View selectedCircle = view.findViewById(R.id.viewSelectedCircle);
 
         String day = days.get(position);
 
         if (day == null || day.isEmpty()) {
             dayText.setText("");
-            dot.setVisibility(View.GONE);
+            dotBlue.setVisibility(View.GONE);
+            dotRed.setVisibility(View.GONE);
             selectedCircle.setVisibility(View.GONE);
             view.setOnClickListener(null);
             return view;
@@ -76,9 +85,15 @@ public class CalendarDayAdapter extends BaseAdapter {
         LocalDate fullDate = currentMonth.withDayOfMonth(Integer.parseInt(day));
         String formattedDate = fullDate.format(DateTimeFormatter.ofPattern("yyyy-M-d"));
 
-        boolean hasEvent = eventDates.contains(formattedDate);
-        dot.setVisibility(hasEvent ? View.VISIBLE : View.GONE);
+        // 蓝点：普通 event
+        boolean hasEvent = eventDates != null && eventDates.contains(formattedDate);
+        dotBlue.setVisibility(hasEvent ? View.VISIBLE : View.GONE);
 
+        // 红点：癫痫
+        boolean hasSeizure = seizureDates != null && seizureDates.contains(formattedDate);
+        dotRed.setVisibility(hasSeizure ? View.VISIBLE : View.GONE);
+
+        // 选中圆圈
         boolean isSelected = formattedDate.equals(selectedDate);
         selectedCircle.setVisibility(isSelected ? View.VISIBLE : View.GONE);
         dayText.setTextColor(isSelected ? 0xFFFFFFFF : 0xFF111827);

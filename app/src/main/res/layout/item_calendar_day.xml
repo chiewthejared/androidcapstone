@@ -3,6 +3,7 @@
     android:layout_width="48dp"
     android:layout_height="48dp">
 
+    <!-- 选中圆圈 -->
     <View
         android:id="@+id/viewSelectedCircle"
         android:layout_width="36dp"
@@ -11,6 +12,7 @@
         android:background="@drawable/bg_selected_circle"
         android:visibility="gone" />
 
+    <!-- 日期数字 -->
     <TextView
         android:id="@+id/calendarDayText"
         android:layout_width="match_parent"
@@ -20,12 +22,32 @@
         android:textStyle="bold"
         android:textColor="#111827" />
 
-    <View
-        android:id="@+id/viewDot"
-        android:layout_width="5dp"
-        android:layout_height="5dp"
-        android:layout_gravity="center_horizontal|bottom"
-        android:layout_marginBottom="8dp"
-        android:background="@drawable/bg_dot_red"
-        android:visibility="gone" />
+    <!-- 点点容器：上下排列 -->
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center_horizontal"
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
+        android:layout_marginBottom="2dp">
+
+        <!-- 蓝点：普通 event / doctor appointment -->
+        <View
+            android:id="@+id/viewDotBlue"
+            android:layout_width="5dp"
+            android:layout_height="5dp"
+            android:background="@drawable/bg_dot_blue"
+            android:visibility="gone" />
+
+        <!-- 红点：癫痫发作 -->
+        <View
+            android:id="@+id/viewDotRed"
+            android:layout_width="5dp"
+            android:layout_height="5dp"
+            android:layout_marginTop="1dp"
+            android:background="@drawable/bg_dot_red"
+            android:visibility="gone" />
+
+    </LinearLayout>
+
 </FrameLayout>
