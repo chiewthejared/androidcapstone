@@ -1,215 +1,214 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/login_root"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:background="@android:color/white" >
+    android:layout_height="match_parent">
 
-    <!-- Header -->
+    <!-- Background image (same approach as intro page) -->
+    <ImageView
+        android:id="@+id/bg_image"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop"
+        android:src="@drawable/conference_bg" />
+
+    <!-- Semi-opaque overlay to match intro page readability -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#BB000000" />
+
+    <!-- Main vertical layout content sits above background -->
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="47dp"
-        android:orientation="horizontal" >
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-        <!-- Gold half -->
-        <View
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="#FFD700" />
+        <!-- Header: keep original two-color look (left gold, right magenta) -->
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="47dp">
 
-        <!-- Magenta half -->
-        <View
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="#8B0000" />
-    </LinearLayout>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:background="@color/golden_yellow" />
 
-    <!-- A small row to hold the bigger guest_timer_icon, shifted right -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingTop="20dp"
-        android:paddingRight="20dp"
-        android:gravity="end"
-        android:orientation="horizontal" >
+            <!-- Timer icon: fixed size and pinned to top-end inside header -->
+            <ImageView
+                android:id="@+id/guest_timer_icon"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:layout_gravity="end|center_vertical"
+                android:layout_marginEnd="12dp"
+                android:src="@drawable/ic_timer"
+                android:contentDescription="Guest Timer"
+                android:padding="6dp" />
+        </FrameLayout>
 
-        <ImageView
-            android:id="@+id/guest_timer_icon"
-            android:layout_width="72dp"
-            android:layout_height="72dp"
-            android:src="@drawable/ic_timer"
-            android:contentDescription="Guest Timer"
-            android:padding="8dp" />
-    </LinearLayout>
-
-    <!-- Content -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:gravity="center"
-        android:orientation="vertical" >
-
-        <!-- Logo -->
-        <ImageView
-            android:id="@+id/logo"
-            android:layout_width="200dp"
-            android:layout_height="200dp"
-            android:alpha="1"
-            android:src="@drawable/sturge_weber_foundation_logo" />
-
-        <!-- PIN Bubbles -->
+        <!-- Content area (keeps original number-pad layout & IDs) -->
         <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginTop="16dp" >
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical" >
 
+            <!-- Logo -->
             <ImageView
-                android:id="@+id/bubble_1"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:layout_margin="4dp"
-                android:background="@drawable/empty_bubble" />
+                android:id="@+id/logo"
+                android:layout_width="200dp"
+                android:layout_height="200dp"
+                android:alpha="1"
+                android:src="@drawable/sturge_weber_foundation_logo" />
 
-            <ImageView
-                android:id="@+id/bubble_2"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:layout_margin="4dp"
-                android:background="@drawable/empty_bubble" />
+            <!-- PIN Bubbles -->
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="16dp" >
 
-            <ImageView
-                android:id="@+id/bubble_3"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:layout_margin="4dp"
-                android:background="@drawable/empty_bubble" />
+                <ImageView
+                    android:id="@+id/bubble_1"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:layout_margin="4dp"
+                    android:background="@drawable/empty_bubble" />
 
-            <ImageView
-                android:id="@+id/bubble_4"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:layout_margin="4dp"
-                android:background="@drawable/empty_bubble" />
+                <ImageView
+                    android:id="@+id/bubble_2"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:layout_margin="4dp"
+                    android:background="@drawable/empty_bubble" />
+
+                <ImageView
+                    android:id="@+id/bubble_3"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:layout_margin="4dp"
+                    android:background="@drawable/empty_bubble" />
+
+                <ImageView
+                    android:id="@+id/bubble_4"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:layout_margin="4dp"
+                    android:background="@drawable/empty_bubble" />
+            </LinearLayout>
+
+            <!-- Number Pad -->
+            <GridLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:alignmentMode="alignMargins"
+                android:columnCount="3"
+                android:rowCount="4"
+                android:layout_gravity="center" >
+
+                <!-- Row 1 -->
+                <Button
+                    android:id="@+id/button_1"
+                    android:layout_width="70dp"
+                    android:layout_height="70dp"
+                    android:text="1"
+                    style="@style/NumberPadButton" />
+
+                <Button
+                    android:id="@+id/button_2"
+                    android:layout_width="70dp"
+                    android:layout_height="70dp"
+                    android:text="2"
+                    style="@style/NumberPadButton" />
+
+                <Button
+                    android:id="@+id/button_3"
+                    android:layout_width="70dp"
+                    android:layout_height="70dp"
+                    android:text="3"
+                    style="@style/NumberPadButton" />
+
+                <!-- Row 2 -->
+                <Button
+                    android:id="@+id/button_4"
+                    android:layout_width="70dp"
+                    android:layout_height="70dp"
+                    android:text="4"
+                    style="@style/NumberPadButton" />
+
+                <Button
+                    android:id="@+id/button_5"
+                    android:layout_width="70dp"
+                    android:layout_height="70dp"
+                    android:text="5"
+                    style="@style/NumberPadButton" />
+
+                <Button
+                    android:id="@+id/button_6"
+                    android:layout_width="70dp"
+                    android:layout_height="70dp"
+                    android:text="6"
+                    style="@style/NumberPadButton" />
+
+                <!-- Row 3 -->
+                <Button
+                    android:id="@+id/button_7"
+                    android:layout_width="70dp"
+                    android:layout_height="70dp"
+                    android:text="7"
+                    style="@style/NumberPadButton" />
+
+                <Button
+                    android:id="@+id/button_8"
+                    android:layout_width="70dp"
+                    android:layout_height="70dp"
+                    android:text="8"
+                    style="@style/NumberPadButton" />
+
+                <Button
+                    android:id="@+id/button_9"
+                    android:layout_width="70dp"
+                    android:layout_height="70dp"
+                    android:text="9"
+                    style="@style/NumberPadButton" />
+
+                <!-- Row 4 -->
+                <View
+                    android:layout_width="70dp"
+                    android:layout_height="70dp" />
+
+                <Button
+                    android:id="@+id/button_0"
+                    android:layout_width="70dp"
+                    android:layout_height="70dp"
+                    android:text="0"
+                    style="@style/NumberPadButton" />
+
+                <Button
+                    android:id="@+id/button_delete"
+                    android:layout_width="70dp"
+                    android:layout_height="70dp"
+                    android:text="⌫"
+                    style="@style/NumberPadButton" />
+            </GridLayout>
+
+            <!-- Account Creation button: changed from green to maroon (port_wine) -->
+            <Button
+                android:id="@+id/account_creation_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Click Here To Create An Account!"
+                android:layout_marginTop="8dp"
+                android:backgroundTint="@color/port_wine"
+                android:textColor="@android:color/white" />
+
+            <!-- NOTE: 'Learn more' TextView removed as requested -->
+
         </LinearLayout>
 
-        <!-- Number Pad -->
-        <GridLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:alignmentMode="alignMargins"
-            android:columnCount="3"
-            android:rowCount="4"
-            android:layout_gravity="center" >
-
-            <!-- First Row -->
-            <Button
-                android:id="@+id/button_1"
-                android:layout_width="70dp"
-                android:layout_height="70dp"
-                android:text="1"
-                style="@style/NumberPadButton" />
-
-            <Button
-                android:id="@+id/button_2"
-                android:layout_width="70dp"
-                android:layout_height="70dp"
-                android:text="2"
-                style="@style/NumberPadButton" />
-
-            <Button
-                android:id="@+id/button_3"
-                android:layout_width="70dp"
-                android:layout_height="70dp"
-                android:text="3"
-                style="@style/NumberPadButton" />
-
-            <!-- Second Row -->
-            <Button
-                android:id="@+id/button_4"
-                android:layout_width="70dp"
-                android:layout_height="70dp"
-                android:text="4"
-                style="@style/NumberPadButton" />
-
-            <Button
-                android:id="@+id/button_5"
-                android:layout_width="70dp"
-                android:layout_height="70dp"
-                android:text="5"
-                style="@style/NumberPadButton" />
-
-            <Button
-                android:id="@+id/button_6"
-                android:layout_width="70dp"
-                android:layout_height="70dp"
-                android:text="6"
-                style="@style/NumberPadButton" />
-
-            <!-- Third Row -->
-            <Button
-                android:id="@+id/button_7"
-                android:layout_width="70dp"
-                android:layout_height="70dp"
-                android:text="7"
-                style="@style/NumberPadButton" />
-
-            <Button
-                android:id="@+id/button_8"
-                android:layout_width="70dp"
-                android:layout_height="70dp"
-                android:text="8"
-                style="@style/NumberPadButton" />
-
-            <Button
-                android:id="@+id/button_9"
-                android:layout_width="70dp"
-                android:layout_height="70dp"
-                android:text="9"
-                style="@style/NumberPadButton" />
-
-            <!-- Fourth Row -->
-            <View
-                android:layout_width="70dp"
-                android:layout_height="70dp" />
-
-            <Button
-                android:id="@+id/button_0"
-                android:layout_width="70dp"
-                android:layout_height="70dp"
-                android:text="0"
-                style="@style/NumberPadButton" />
-
-            <Button
-                android:id="@+id/button_delete"
-                android:layout_width="70dp"
-                android:layout_height="70dp"
-                android:text="⌫"
-                style="@style/NumberPadButton" />
-        </GridLayout>
-
-        <!-- Account Creation -->
-        <Button
-            android:id="@+id/account_creation_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Click Here To Create An Account!"
-            android:layout_marginTop="8dp"
-            android:backgroundTint="#008000" />
-
-        <!-- Learn More -->
-        <TextView
-            android:id="@+id/learn_more"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Learn more about the foundation here"
-            android:textColor="#0000EE"
-            android:layout_marginTop="16dp" />
     </LinearLayout>
 
-</LinearLayout>
+</FrameLayout>

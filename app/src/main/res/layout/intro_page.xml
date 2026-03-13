@@ -35,21 +35,10 @@
             android:gravity="center_horizontal">
 
             <!-- Header color bars (keeps look from original) -->
-            <LinearLayout
+            <View
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
-                android:orientation="horizontal">
-                <View
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:background="#FFD700" />
-                <View
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:background="#8B0000" />
-            </LinearLayout>
+                android:background="@color/golden_yellow" />
 
             <!-- Logo -->
             <ImageView
@@ -70,7 +59,7 @@
                 android:textStyle="bold"
                 android:gravity="center"
                 android:layout_marginTop="16dp"
-                android:textColor="@android:color/white"/>
+                android:textColor="@color/golden_yellow"/>
 
             <!-- Mission paragraph (replaced text) -->
             <TextView
@@ -99,7 +88,7 @@
                 android:layout_height="wrap_content"
                 android:text="Continue"
                 android:layout_marginTop="24dp"
-                android:backgroundTint="#0F8A07"
+                android:backgroundTint="@color/port_wine"
                 android:textColor="@android:color/white" />
 
             <!-- Learn More link (keep same ID so existing code works) -->
@@ -110,7 +99,7 @@
                 android:text="Learn more about the foundation here"
                 android:textSize="14sp"
                 android:gravity="center"
-                android:textColor="#ADD8E6"
+                android:textColor="@color/golden_yellow"
                 android:layout_marginTop="12dp" />
 
         </LinearLayout>
