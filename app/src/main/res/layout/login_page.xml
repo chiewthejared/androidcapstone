@@ -38,13 +38,12 @@
             <!-- Timer icon: fixed size and pinned to top-end inside header -->
             <ImageView
                 android:id="@+id/guest_timer_icon"
-                android:layout_width="36dp"
-                android:layout_height="36dp"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
                 android:layout_gravity="end|center_vertical"
                 android:layout_marginEnd="12dp"
                 android:src="@drawable/ic_timer"
-                android:contentDescription="Guest Timer"
-                android:padding="6dp" />
+                android:contentDescription="Guest Timer" />
         </FrameLayout>
 
         <!-- Content area (keeps original number-pad layout & IDs) -->
