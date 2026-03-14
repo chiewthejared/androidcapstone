@@ -2,51 +2,21 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/root"
+    android:id="@+id/home_root"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/home_background">
 
-    <!-- Gradient background (you already have bg_home_gradient) -->
+    <!-- Top status spacer (optional) -->
     <View
-        android:id="@+id/bg"
+        android:id="@+id/top_spacer"
         android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:background="@drawable/bg_home_gradient"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
-
-    <!-- Top toolbar icons -->
-    <ImageButton
-        android:id="@+id/btn_back"
-        style="?attr/borderlessButtonStyle"
-        android:layout_width="44dp"
-        android:layout_height="44dp"
-        android:padding="8dp"
-        android:src="@drawable/ic_back_arrow"
-        android:contentDescription="@string/back"
-        android:background="@android:color/transparent"
+        android:layout_height="8dp"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        android:layout_marginStart="12dp"
-        android:layout_marginTop="12dp"/>
+        app:layout_constraintEnd_toEndOf="parent"/>
 
-    <ImageButton
-        android:id="@+id/btn_share"
-        style="?attr/borderlessButtonStyle"
-        android:layout_width="44dp"
-        android:layout_height="44dp"
-        android:padding="8dp"
-        android:src="@drawable/ic_file"
-        android:contentDescription="@string/share"
-        android:background="@android:color/transparent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginEnd="12dp"
-        android:layout_marginTop="12dp"/>
-
-    <!-- Greeting card -->
+    <!-- Greeting card (greeting + logout icon) -->
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/greeting_card"
         android:layout_width="0dp"
@@ -58,60 +28,101 @@
         app:strokeColor="#22000000"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
-        android:layout_marginTop="20dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="12dp"
         app:layout_constraintTop_toTopOf="parent"
-        android:foreground="?attr/selectableItemBackground">
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
 
         <LinearLayout
-            android:orientation="vertical"
-            android:padding="16dp"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="16dp"
+            android:gravity="center_vertical">
 
-            <TextView
-                android:id="@+id/tv_welcome"
-                android:layout_width="wrap_content"
+            <!-- LEFT: text section -->
+            <LinearLayout
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="@string/welcome"
-                android:textColor="@android:color/white"
-                android:textStyle="bold"
-                android:textSize="12sp"/>
+                android:layout_weight="1"
+                android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/tv_name"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/john_doe"
-                android:textColor="@android:color/white"
-                android:textStyle="bold"
-                android:textSize="18sp"
-                android:layout_marginTop="4dp"/>
+                <TextView
+                    android:id="@+id/tv_welcome"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Welcome"
+                    android:textColor="@android:color/white"
+                    android:textStyle="bold"
+                    android:textSize="12sp"/>
 
-            <TextView
-                android:id="@+id/tv_sub"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/subtitle"
-                android:textColor="#BFE6E0"
-                android:textSize="12sp"
-                android:layout_marginTop="6dp"/>
+                <TextView
+                    android:id="@+id/tv_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="John Doe"
+                    android:textColor="@android:color/white"
+                    android:textStyle="bold"
+                    android:textSize="18sp"
+                    android:layout_marginTop="4dp"/>
+
+                <TextView
+                    android:id="@+id/tv_sub"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Your care, learning, and tools — all in one place."
+                    android:textColor="#BFE6E0"
+                    android:textSize="12sp"
+                    android:layout_marginTop="6dp"/>
+            </LinearLayout>
+
+            <!-- RIGHT: logout circle -->
+            <ImageButton
+                android:id="@+id/btn_logout"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
+                android:background="@drawable/logout_circle_bg"
+                android:src="@drawable/ic_logout"
+                app:tint="#FFFFFF"
+                android:contentDescription="Logout"/>
         </LinearLayout>
+
     </com.google.android.material.card.MaterialCardView>
 
-    <!-- RecyclerView grid for the tiles -->
+    <!-- Back and Share buttons (example placement near top-right) -->
+    <ImageButton
+        android:id="@+id/btn_back"
+        android:layout_width="44dp"
+        android:layout_height="44dp"
+        android:src="@drawable/ic_back_arrow"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        app:tint="#FFFFFF"
+        app:layout_constraintTop_toTopOf="@id/greeting_card"
+        app:layout_constraintEnd_toStartOf="@id/btn_share"
+        android:layout_marginEnd="8dp"/>
+
+    <ImageButton
+        android:id="@+id/btn_share"
+        android:layout_width="44dp"
+        android:layout_height="44dp"
+        android:src="@drawable/ic_share"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        app:tint="#FFFFFF"
+        app:layout_constraintTop_toTopOf="@id/greeting_card"
+        app:layout_constraintEnd_toEndOf="@id/greeting_card"
+        android:layout_marginEnd="8dp"/>
+
+    <!-- Tiles RecyclerView -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_tiles"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:clipToPadding="false"
-        android:paddingTop="18dp"
-        android:paddingStart="16dp"
-        android:paddingEnd="16dp"
+        android:paddingTop="12dp"
         android:paddingBottom="24dp"
         app:layout_constraintTop_toBottomOf="@id/greeting_card"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

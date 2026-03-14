@@ -13,4 +13,5 @@
     <color name="tile_icon_color">#FFFFFFFF</color>
     <color name="tile_label_color">#FFFFFFFF</color>
     <color name="greeting_card_solid">#0B3B33</color>
+    <color name="home_background">#B68F92</color>
 </resources>
