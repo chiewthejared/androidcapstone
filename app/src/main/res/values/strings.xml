@@ -74,4 +74,23 @@
         <item>26</item><item>27</item><item>28</item><item>29</item><item>30</item>
     </string-array>
 
+    <!-- Profile Page -->
+    <string name="my_profile">My Profile</string>
+    <string name="change_passcode">Change Passcode</string>
+    <string name="log_out">Log Out</string>
+    <string name="delete_account">Delete Account</string>
+    <string name="medication_reminders">Medication Reminders</string>
+    <string name="remind_me">Remind me</string>
+    <string name="change_photo">Change photo</string>
+    <string name="default_user_name">%1$s</string>
+    <string name="default_user_email">%1$s</string>
+    <string name="avatar">Avatar</string>
+    <string name="name_icon">Name icon</string>
+    <string name="edit">Edit</string>
+    <string name="med_reminder">Medication reminder</string>
+    <string name="personal_information_label">PERSONAL INFORMATION</string>
+    <string name="preferences_label">PREFERENCES</string>
+    <string name="account_label">ACCOUNT</string>
+
+
 </resources>

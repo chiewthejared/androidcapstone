@@ -14,4 +14,12 @@
     <color name="tile_label_color">#FFFFFFFF</color>
     <color name="greeting_card_solid">#0B3B33</color>
     <color name="home_background">#B68F92</color>
+    <!-- profile-specific helpers (add only if missing) -->
+    <color name="profile_background">#FFF7F7F9</color>  <!-- very light -->
+    <color name="teal_800">#024D47</color>               <!-- darker teal for header -->
+    <color name="secondary_text">#FF9E9E9E</color>
+    <color name="label_text">#FF8F8F8F</color>
+    <color name="divider">#11000000</color>
+    <color name="warn_orange">#FFEB8A48</color>
+    <color name="delete_red">#FFDF4A4A</color>
 </resources>
