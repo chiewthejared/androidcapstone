@@ -11,15 +11,18 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-
+import com.google.android.material.button.MaterialButton;
 import com.example.test_v2.timer.HelperTimerEvent;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
+
 
 /**
  * Adapter to show timer history items.
@@ -38,6 +41,9 @@ public class TimerHistoryAdapter extends RecyclerView.Adapter<TimerHistoryAdapte
     private final Context ctx;
     private final OnItemActionListener listener;
 
+    //added event id
+    private final Set<Long> addedIds = new HashSet<>();
+
     public TimerHistoryAdapter(Context ctx, OnItemActionListener listener) {
         this.ctx = ctx;
         this.listener = listener;
@@ -53,6 +59,17 @@ public class TimerHistoryAdapter extends RecyclerView.Adapter<TimerHistoryAdapte
         if (pos < 0 || pos >= items.size()) return;
         items.remove(pos);
         notifyItemRemoved(pos);
+    }
+
+    //markadded
+    public void markAsAdded(long eventId) {
+        addedIds.add(eventId);
+        for (int i = 0; i < items.size(); i++) {
+            if (items.get(i).id == eventId) {
+                notifyItemChanged(i);
+                break;
+            }
+        }
     }
 
     @NonNull
@@ -88,6 +105,27 @@ public class TimerHistoryAdapter extends RecyclerView.Adapter<TimerHistoryAdapte
         });
 
         holder.checkBox.setChecked(false);
+
+        // decide already added or not
+        boolean isAdded = addedIds.contains((long) e.id);
+        if (isAdded) {
+            // added
+            holder.addCalendarBtn.setText("✓ Added");
+            holder.addCalendarBtn.setEnabled(false);
+            holder.addCalendarBtn.setIconResource(0);
+            holder.addCalendarBtn.setStrokeColorResource(R.color.teal);
+            holder.addCalendarBtn.setTextColor(
+                    ctx.getResources().getColor(R.color.teal, null));
+        } else {
+            // not added
+            holder.addCalendarBtn.setText(ctx.getString(R.string.add_to_calendar));
+            holder.addCalendarBtn.setEnabled(true);
+            holder.addCalendarBtn.setIconResource(R.drawable.ic_calendar);
+            holder.addCalendarBtn.setOnClickListener(v -> {
+                if (listener != null) listener.onAddToCalendar(e);
+            });
+        }
+
     }
 
     @Override
@@ -99,7 +137,7 @@ public class TimerHistoryAdapter extends RecyclerView.Adapter<TimerHistoryAdapte
         CheckBox checkBox;
         TextView dateLabel, startTime, endTime, durationText;
         ImageButton deleteBtn;
-        Button addCalendarBtn;
+        MaterialButton addCalendarBtn;
 
         VH(@NonNull View itemView) {
             super(itemView);

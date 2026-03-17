@@ -7,40 +7,46 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.Toast;
+
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
+
 import com.example.test_v2.fileAndDatabase.HelperAppDatabase;
 import com.example.test_v2.R;
+import com.example.test_v2.doctorInfo.DoctorDatabase;
+import com.example.test_v2.doctorInfo.DoctorItem;
 import com.example.test_v2.tags.Tag;
 import com.example.test_v2.tags.TagDao;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 import java.util.UUID;
 import java.util.concurrent.Executors;
 
 public class EditEventActivity extends AppCompatActivity {
+
     private EditText titleInput, descriptionInput, tagInput;
-    private Button eventDateButton, eventStartTimeButton, eventEndTimeButton, saveButton, addTagButton;
-    private Spinner tagSpinner, editOptionSpinner;
+    private Button eventDateButton, eventStartTimeButton, eventEndTimeButton, saveButton;
+    private Spinner tagSpinner, editOptionSpinner, spinnerDoctor;
+    private CheckBox cbDoctorAppointment;
+    private LinearLayout layoutDoctorSection;
+    private EditText etDoctorNameManual;
     private ArrayAdapter<String> tagAdapter;
+
     private String selectedDate = "";
     private String selectedStartTime = "";
     private String selectedEndTime = "";
@@ -50,6 +56,11 @@ public class EditEventActivity extends AppCompatActivity {
     private String repeat;
     private int occurrence;
     private SharedPreferences userSession;
+    private boolean isNewEvent = false;
+
+    // Doctor list from DB
+    private List<DoctorItem> doctorList = new ArrayList<>();
+    private ArrayAdapter<String> doctorAdapter;
 
     private void loadTagsFromDatabase(Spinner tagSpinner, String selectedTag) {
         new Thread(() -> {
@@ -57,19 +68,35 @@ public class EditEventActivity extends AppCompatActivity {
             List<Tag> dbTags = tagDao.getAll();
             List<String> tagNames = new ArrayList<>();
             tagNames.add("None");
-            for (Tag t : dbTags) {
-                tagNames.add(t.name);
-            }
+            for (Tag t : dbTags) tagNames.add(t.name);
             runOnUiThread(() -> {
                 tagAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, tagNames);
                 tagAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                 tagSpinner.setAdapter(tagAdapter);
                 int position = tagAdapter.getPosition(selectedTag);
-                if (position >= 0) {
-                    tagSpinner.setSelection(position);
-                }
+                if (position >= 0) tagSpinner.setSelection(position);
             });
         }).start();
+    }
+
+    private void loadDoctorsFromDatabase() {
+        String myPin = userSession.getString("loggedInPin", "");
+        DoctorDatabase.getDatabase(this).doctorDao()
+                .getDoctorsByUser(myPin)
+                .observe(this, doctors -> {
+                    doctorList.clear();
+                    List<String> names = new ArrayList<>();
+                    names.add("Select a doctor...");
+                    if (doctors != null) {
+                        doctorList.addAll(doctors);
+                        for (DoctorItem d : doctors) names.add(d.name);
+                    }
+                    doctorAdapter = new ArrayAdapter<>(this,
+                            android.R.layout.simple_spinner_item, names);
+                    doctorAdapter.setDropDownViewResource(
+                            android.R.layout.simple_spinner_dropdown_item);
+                    spinnerDoctor.setAdapter(doctorAdapter);
+                });
     }
 
     @SuppressLint("MissingInflatedId")
@@ -77,28 +104,57 @@ public class EditEventActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_event);
-        // Use consistent SharedPreferences name "UserSession"
+
         userSession = getSharedPreferences("UserSession", MODE_PRIVATE);
+
         titleInput = findViewById(R.id.eventTitleInput);
+        descriptionInput = findViewById(R.id.eventDescriptionInput);
         eventDateButton = findViewById(R.id.eventDateButton);
         eventStartTimeButton = findViewById(R.id.eventStartTimeButton);
         eventEndTimeButton = findViewById(R.id.eventEndTimeButton);
         tagSpinner = findViewById(R.id.eventTagSpinner);
         tagInput = findViewById(R.id.eventTagInput);
-        addTagButton = findViewById(R.id.addTagButton);
-        descriptionInput = findViewById(R.id.eventDescriptionInput);
         saveButton = findViewById(R.id.saveEventButton);
         editOptionSpinner = findViewById(R.id.eventEditOptionSpinner);
-        Button cancelButton = findViewById(R.id.cancelEventButton);
+        cbDoctorAppointment = findViewById(R.id.cbDoctorAppointment);
+        layoutDoctorSection = findViewById(R.id.layoutDoctorSection);
+        spinnerDoctor = findViewById(R.id.spinnerDoctor);
+        etDoctorNameManual = findViewById(R.id.etDoctorNameManual);
 
+        Button cancelButton = findViewById(R.id.cancelEventButton);
         cancelButton.setOnClickListener(v -> finish());
+
+        // Doctor checkbox toggle
+        cbDoctorAppointment.setOnCheckedChangeListener((btn, checked) -> {
+            layoutDoctorSection.setVisibility(checked ? View.VISIBLE : View.GONE);
+        });
+
+        // Load doctors
+        loadDoctorsFromDatabase();
+
         eventViewModel = new ViewModelProvider(this).get(EventViewModel.class);
         eventId = getIntent().getStringExtra("uuid");
+
         if (eventId == null || eventId.isEmpty()) {
-            Toast.makeText(this, "Invalid event ID", Toast.LENGTH_SHORT).show();
-            finish();
-            return;
+            // ===== 新建模式 =====
+            isNewEvent = true;
+            eventId = UUID.randomUUID().toString();
+            link = UUID.randomUUID().toString();
+            repeat = "No Repeat";
+            occurrence = 1;
+            editOptionSpinner.setVisibility(View.GONE);
+
+            String prefilledDate = getIntent().getStringExtra("prefilledDate");
+            if (prefilledDate != null) {
+                selectedDate = prefilledDate;
+                eventDateButton.setText(selectedDate);
+            }
+
+            loadTagsFromDatabase(tagSpinner, "None");
+
         } else {
+            // ===== 编辑模式 =====
+            isNewEvent = false;
             eventViewModel.getEventById(eventId).observe(this, event -> {
                 if (event != null) {
                     titleInput.setText(event.getTitle());
@@ -113,70 +169,70 @@ public class EditEventActivity extends AppCompatActivity {
                     occurrence = event.getOccurrenceCount();
                     link = event.getLinkedId();
                     loadTagsFromDatabase(tagSpinner, event.getTag());
-                    if ("No Repeat".equals(event.getRepeatInterval())) {
-                        editOptionSpinner.setVisibility(View.GONE);
-                    } else {
-                        editOptionSpinner.setVisibility(View.VISIBLE);
-                    }
+                    editOptionSpinner.setVisibility(
+                            "No Repeat".equals(event.getRepeatInterval()) ? View.GONE : View.VISIBLE
+                    );
                 }
             });
         }
 
-        // Date picker with non–zero-padded format
+        // Date picker
         eventDateButton.setOnClickListener(view -> {
             Calendar calendar = Calendar.getInstance();
-            int year = calendar.get(Calendar.YEAR);
-            int month = calendar.get(Calendar.MONTH);
-            int day = calendar.get(Calendar.DAY_OF_MONTH);
-            DatePickerDialog datePickerDialog = new DatePickerDialog(EditEventActivity.this,
-                    (dateView, selectedYear, selectedMonth, selectedDay) -> {
-                        // Use format "yyyy-M-d"
-                        selectedDate = selectedYear + "-" + (selectedMonth + 1) + "-" + selectedDay;
+            new DatePickerDialog(this,
+                    (dateView, y, m, d) -> {
+                        selectedDate = y + "-" + (m + 1) + "-" + d;
                         eventDateButton.setText(selectedDate);
-                    }, year, month, day);
-            datePickerDialog.show();
+                    },
+                    calendar.get(Calendar.YEAR),
+                    calendar.get(Calendar.MONTH),
+                    calendar.get(Calendar.DAY_OF_MONTH)).show();
         });
 
-        // Start time picker (12-hour format)
+        // Start time picker
         eventStartTimeButton.setOnClickListener(view -> {
-            Calendar calendar = Calendar.getInstance();
-            int hour = calendar.get(Calendar.HOUR_OF_DAY);
-            int minute = calendar.get(Calendar.MINUTE);
-            TimePickerDialog timePickerDialog = new TimePickerDialog(EditEventActivity.this,
-                    (timeView, selectedHour, selectedMinute) -> {
-                        int hour12 = selectedHour % 12;
-                        if (hour12 == 0) { hour12 = 12; }
-                        String amPm = selectedHour < 12 ? "AM" : "PM";
-                        selectedStartTime = String.format("%02d:%02d %s", hour12, selectedMinute, amPm);
-                        eventStartTimeButton.setText(selectedStartTime);
-                    }, hour, minute, false);
-            timePickerDialog.show();
+            Calendar c = Calendar.getInstance();
+            new TimePickerDialog(this, (tv, h, min) -> {
+                int h12 = h % 12 == 0 ? 12 : h % 12;
+                String ap = h < 12 ? "AM" : "PM";
+                selectedStartTime = String.format("%02d:%02d %s", h12, min, ap);
+                eventStartTimeButton.setText(selectedStartTime);
+            }, c.get(Calendar.HOUR_OF_DAY), c.get(Calendar.MINUTE), false).show();
         });
 
-        // End time picker (12-hour format)
+        // End time picker
         eventEndTimeButton.setOnClickListener(view -> {
-            Calendar calendar = Calendar.getInstance();
-            int hour = calendar.get(Calendar.HOUR_OF_DAY);
-            int minute = calendar.get(Calendar.MINUTE);
-            TimePickerDialog timePickerDialog = new TimePickerDialog(EditEventActivity.this,
-                    (timeView, selectedHour, selectedMinute) -> {
-                        int hour12 = selectedHour % 12;
-                        if (hour12 == 0) { hour12 = 12; }
-                        String amPm = selectedHour < 12 ? "AM" : "PM";
-                        selectedEndTime = String.format("%02d:%02d %s", hour12, selectedMinute, amPm);
-                        eventEndTimeButton.setText(selectedEndTime);
-                    }, hour, minute, false);
-            timePickerDialog.show();
+            Calendar c = Calendar.getInstance();
+            new TimePickerDialog(this, (tv, h, min) -> {
+                int h12 = h % 12 == 0 ? 12 : h % 12;
+                String ap = h < 12 ? "AM" : "PM";
+                selectedEndTime = String.format("%02d:%02d %s", h12, min, ap);
+                eventEndTimeButton.setText(selectedEndTime);
+            }, c.get(Calendar.HOUR_OF_DAY), c.get(Calendar.MINUTE), false).show();
         });
 
-        // Save button: update event based on edit option.
+        // Save button
         saveButton.setOnClickListener(view -> {
-            // Use the actual logged-in session value from SharedPreferences
             String finalSession = userSession.getString("loggedInPin", "");
             String finalTag = tagSpinner.getSelectedItem().toString();
+
+            // 处理 doctor appointment 标题
+            String title = titleInput.getText().toString().trim();
+            if (cbDoctorAppointment.isChecked()) {
+                String manualName = etDoctorNameManual.getText().toString().trim();
+                if (!manualName.isEmpty()) {
+                    title = "Dr. " + manualName + (title.isEmpty() ? "" : " - " + title);
+                } else if (spinnerDoctor.getSelectedItemPosition() > 0) {
+                    DoctorItem selected = doctorList.get(spinnerDoctor.getSelectedItemPosition() - 1);
+                    title = "Dr. " + selected.name + (title.isEmpty() ? "" : " - " + title);
+                }
+                // doctor appointment 也用蓝色，tag 标记为 "DoctorAppointment"
+                finalTag = "DoctorAppointment";
+            }
+
             HelperEvent updatedEvent = new HelperEvent(
                     eventId,
-                    titleInput.getText().toString().trim(),
+                    title,
                     descriptionInput.getText().toString().trim(),
                     selectedDate,
                     selectedStartTime,
@@ -188,13 +244,20 @@ public class EditEventActivity extends AppCompatActivity {
                     finalSession
             );
 
+            if (isNewEvent) {
+                eventViewModel.insert(updatedEvent);
+                setResult(RESULT_OK);
+                finish();
+                return;
+            }
+
             String editOption = editOptionSpinner.getSelectedItem().toString();
             switch (editOption) {
                 case "Just this event":
                     eventViewModel.update(updatedEvent);
-                    Intent resultIntent = new Intent();
-                    resultIntent.putExtra("updatedEventId", eventId);
-                    setResult(RESULT_OK, resultIntent);
+                    Intent r1 = new Intent();
+                    r1.putExtra("updatedEventId", eventId);
+                    setResult(RESULT_OK, r1);
                     finish();
                     break;
                 case "All repeating events":
@@ -202,16 +265,15 @@ public class EditEventActivity extends AppCompatActivity {
                     break;
                 default:
                     eventViewModel.update(updatedEvent);
-                    Intent defaultIntent = new Intent();
-                    defaultIntent.putExtra("updatedEventId", eventId);
-                    setResult(RESULT_OK, defaultIntent);
+                    Intent r2 = new Intent();
+                    r2.putExtra("updatedEventId", eventId);
+                    setResult(RESULT_OK, r2);
                     finish();
                     break;
             }
         });
     }
 
-    // Update all recurring events: delete every event with the same linked ID and re-create the full series.
     private void updateAllRecurringEvents(HelperEvent updatedEvent) {
         LiveData<List<HelperEvent>> eventsLiveData = eventViewModel.getEventsByLinkedId(link);
         Observer<List<HelperEvent>> observer = new Observer<List<HelperEvent>>() {
@@ -220,32 +282,30 @@ public class EditEventActivity extends AppCompatActivity {
             public void onChanged(List<HelperEvent> events) {
                 eventsLiveData.removeObserver(this);
                 if (events != null) {
-                    for (HelperEvent event : events) {
-                        eventViewModel.delete(event);
-                    }
+                    for (HelperEvent event : events) eventViewModel.delete(event);
                     createNewRecurringEvents(updatedEvent);
                 } else {
                     finish();
                 }
             }
         };
-        eventsLiveData.observe(EditEventActivity.this, observer);
+        eventsLiveData.observe(this, observer);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     private void createNewRecurringEvents(HelperEvent updatedEvent) {
-        // Use the consistent date format "yyyy-M-d"
-        List<String> recurringDates = getRecurringDates(updatedEvent.getDate(), updatedEvent.getRepeatInterval(), updatedEvent.getOccurrenceCount());
+        List<String> recurringDates = getRecurringDates(
+                updatedEvent.getDate(),
+                updatedEvent.getRepeatInterval(),
+                updatedEvent.getOccurrenceCount());
         String newLinkedId = updatedEvent.getLinkedId();
-        final String[] firstEventIdHolder = new String[1];
+        final String[] firstId = new String[1];
 
         Executors.newSingleThreadExecutor().execute(() -> {
             for (String date : recurringDates) {
                 String newId = UUID.randomUUID().toString();
-                if (firstEventIdHolder[0] == null) {
-                    firstEventIdHolder[0] = newId;
-                }
-                HelperEvent newEvent = new HelperEvent(
+                if (firstId[0] == null) firstId[0] = newId;
+                eventViewModel.insert(new HelperEvent(
                         newId,
                         updatedEvent.getTitle(),
                         updatedEvent.getDescription(),
@@ -257,73 +317,52 @@ public class EditEventActivity extends AppCompatActivity {
                         updatedEvent.getOccurrenceCount(),
                         newLinkedId,
                         userSession.getString("loggedInPin", "")
-                );
-                eventViewModel.insert(newEvent);
+                ));
             }
             runOnUiThread(() -> {
-                Intent resultIntent = new Intent();
-                resultIntent.putExtra("updatedEventId", firstEventIdHolder[0]);
-                setResult(RESULT_OK, resultIntent);
+                Intent r = new Intent();
+                r.putExtra("updatedEventId", firstId[0]);
+                setResult(RESULT_OK, r);
                 finish();
             });
         });
     }
 
-    // Generate recurring dates from the base date until baseDate + 5 years using the format "yyyy-M-d"
     @RequiresApi(api = Build.VERSION_CODES.O)
     public static List<String> getRecurringDates(String firstDate, String intervalType, int intervalValue) {
-        List<String> recurringDates = new ArrayList<>();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-M-d");
-        LocalDate baseDate = LocalDate.parse(firstDate, formatter);
-        LocalDate endDate = baseDate.plusYears(5);
-        LocalDate currentDate = baseDate;
-        while (!currentDate.isAfter(endDate)) {
-            recurringDates.add(currentDate.format(formatter));
+        List<String> dates = new ArrayList<>();
+        DateTimeFormatter fmt = DateTimeFormatter.ofPattern("yyyy-M-d");
+        LocalDate base = LocalDate.parse(firstDate, fmt);
+        LocalDate end = base.plusYears(5);
+        LocalDate cur = base;
+        while (!cur.isAfter(end)) {
+            dates.add(cur.format(fmt));
             switch (intervalType) {
-                case "Every X Days":
-                    currentDate = currentDate.plusDays(intervalValue);
-                    break;
-                case "Every Week":
-                    currentDate = currentDate.plusWeeks(1);
-                    break;
-                case "Every Month":
-                    currentDate = currentDate.plusMonths(1);
-                    break;
-                case "Every Year":
-                    currentDate = currentDate.plusYears(1);
-                    break;
-                default:
-                    throw new IllegalArgumentException("Invalid interval type");
+                case "Every X Days": cur = cur.plusDays(intervalValue); break;
+                case "Every Week":   cur = cur.plusWeeks(1); break;
+                case "Every Month":  cur = cur.plusMonths(1); break;
+                case "Every Year":   cur = cur.plusYears(1); break;
+                default: throw new IllegalArgumentException("Invalid interval type");
             }
         }
-        return recurringDates;
+        return dates;
     }
 
-    // Generate exactly 'count' recurring dates starting from firstDate using "yyyy-M-d"
     @RequiresApi(api = Build.VERSION_CODES.O)
     public static List<String> getRecurringDatesCount(String firstDate, String intervalType, int count) {
-        List<String> recurringDates = new ArrayList<>();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-M-d");
-        LocalDate currentDate = LocalDate.parse(firstDate, formatter);
+        List<String> dates = new ArrayList<>();
+        DateTimeFormatter fmt = DateTimeFormatter.ofPattern("yyyy-M-d");
+        LocalDate cur = LocalDate.parse(firstDate, fmt);
         for (int i = 0; i < count; i++) {
-            recurringDates.add(currentDate.format(formatter));
+            dates.add(cur.format(fmt));
             switch (intervalType) {
-                case "Every X Days":
-                    currentDate = currentDate.plusDays(1);
-                    break;
-                case "Every Week":
-                    currentDate = currentDate.plusWeeks(1);
-                    break;
-                case "Every Month":
-                    currentDate = currentDate.plusMonths(1);
-                    break;
-                case "Every Year":
-                    currentDate = currentDate.plusYears(1);
-                    break;
-                default:
-                    throw new IllegalArgumentException("Invalid interval type");
+                case "Every X Days": cur = cur.plusDays(1); break;
+                case "Every Week":   cur = cur.plusWeeks(1); break;
+                case "Every Month":  cur = cur.plusMonths(1); break;
+                case "Every Year":   cur = cur.plusYears(1); break;
+                default: throw new IllegalArgumentException("Invalid interval type");
             }
         }
-        return recurringDates;
+        return dates;
     }
 }

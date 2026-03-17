@@ -1,92 +1,147 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:padding="16dp">
+    android:layout_height="match_parent"
+    android:background="@android:color/white">
 
-    <!-- Top Row with Cancel Button -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <!-- Top Row with Cancel Button -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/cancelEventButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Cancel"
+                android:backgroundTint="@android:color/darker_gray"
+                android:textColor="@android:color/white"
+                android:layout_marginEnd="16dp" />
+        </LinearLayout>
+
+        <!-- Event Title Input -->
+        <EditText
+            android:id="@+id/eventTitleInput"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Event Title"
+            android:layout_marginTop="8dp" />
+
+        <!-- Event Description Input -->
+        <EditText
+            android:id="@+id/eventDescriptionInput"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Description"
+            android:layout_marginTop="8dp" />
+
+        <!-- Date Selection Button -->
+        <Button
+            android:id="@+id/eventDateButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Select Date"
+            android:layout_marginTop="8dp" />
+
+        <!-- Time Selection Buttons -->
+        <Button
+            android:id="@+id/eventStartTimeButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Select Start Time"
+            android:layout_marginTop="8dp" />
 
         <Button
-            android:id="@+id/cancelEventButton"
-            android:layout_width="wrap_content"
+            android:id="@+id/eventEndTimeButton"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Cancel"
-            android:backgroundTint="@android:color/darker_gray"
-            android:textColor="@android:color/white"
-            android:layout_marginEnd="16dp" />
+            android:text="Select End Time"
+            android:layout_marginTop="8dp" />
+
+        <!-- Spinner for selecting tags -->
+        <Spinner
+            android:id="@+id/eventTagSpinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp" />
+
+        <!-- Input field for adding a new tag -->
+        <EditText
+            android:id="@+id/eventTagInput"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Enter new tag"
+            android:visibility="gone" />
+
+        <!-- Doctor Appointment Checkbox -->
+        <CheckBox
+            android:id="@+id/cbDoctorAppointment"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Doctor Appointment"
+            android:textSize="15sp"
+            android:layout_marginTop="12dp" />
+
+        <!-- Doctor selection section (hidden by default) -->
+        <LinearLayout
+            android:id="@+id/layoutDoctorSection"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <!-- Select from saved doctors -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Select Doctor"
+                android:textSize="13sp"
+                android:textColor="#6B7280"
+                android:layout_marginTop="8dp" />
+
+            <Spinner
+                android:id="@+id/spinnerDoctor"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp" />
+
+            <!-- OR manually type doctor name -->
+            <EditText
+                android:id="@+id/etDoctorNameManual"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Or type doctor name manually"
+                android:layout_marginTop="8dp" />
+
+        </LinearLayout>
+
+        <!-- Spacer -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="16dp" />
+
+        <!-- Spinner for editing option -->
+        <Spinner
+            android:id="@+id/eventEditOptionSpinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:entries="@array/edit_event_options" />
+
+        <!-- Save Event Button -->
+        <Button
+            android:id="@+id/saveEventButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Save Event"
+            android:layout_marginTop="8dp"
+            android:backgroundTint="@color/teal" />
+
     </LinearLayout>
-
-    <!-- Event Title Input -->
-    <EditText
-        android:id="@+id/eventTitleInput"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Event Title" />
-
-    <!-- Event Description Input -->
-    <EditText
-        android:id="@+id/eventDescriptionInput"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Description" />
-
-    <!-- Date Selection Button -->
-    <Button
-        android:id="@+id/eventDateButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Select Date" />
-
-    <!-- Time Selection Buttons -->
-    <Button
-        android:id="@+id/eventStartTimeButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Select Start Time" />
-
-    <Button
-        android:id="@+id/eventEndTimeButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Select End Time" />
-
-    <!-- Spinner for selecting tags -->
-    <Spinner
-        android:id="@+id/eventTagSpinner"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-
-    <!-- Input field for adding a new tag -->
-    <EditText
-        android:id="@+id/eventTagInput"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Enter new tag"
-        android:visibility="gone" />
-
-    <!-- Spacer between tag selection and editing option -->
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="16dp" />
-
-    <!-- Spinner for selecting if editing just this event or all events -->
-    <Spinner
-        android:id="@+id/eventEditOptionSpinner"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:entries="@array/edit_event_options" />
-
-    <!-- Save Event Button -->
-    <Button
-        android:id="@+id/saveEventButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Save Event"
-        android:backgroundTint="@color/teal" />
-
-
-</LinearLayout>
+</ScrollView>
