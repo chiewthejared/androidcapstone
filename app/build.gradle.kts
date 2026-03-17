@@ -65,4 +65,7 @@ dependencies {
     annotationProcessor(libs.room.compiler)
     implementation(libs.mpandroidchart)
     coreLibraryDesugaring(libs.desugar.jdk.libs)
+
+    implementation("com.pierfrancescosoffritti.androidyoutubeplayer:core:11.1.0")
+    implementation("com.squareup.okhttp3:okhttp:4.10.0")
 }

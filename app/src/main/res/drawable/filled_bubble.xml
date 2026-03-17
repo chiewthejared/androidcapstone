@@ -1,3 +1,5 @@
-<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="oval">
-    <solid android:color="#000000" /> <!-- Green when filled -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <solid android:color="@color/port_wine"/>
+    <size android:width="32dp" android:height="32dp"/>
+    <corners android:radius="16dp"/>
 </shape>

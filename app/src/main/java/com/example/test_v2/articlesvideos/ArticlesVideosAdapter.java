@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -26,27 +27,42 @@ public class ArticlesVideosAdapter extends RecyclerView.Adapter<ArticlesVideosAd
 
     @NonNull
     @Override
-    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public ArticlesVideosAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.article_video_item, parent, false);
         return new ViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull ArticlesVideosAdapter.ViewHolder holder, int position) {
+        if (items == null || position < 0 || position >= items.size()) return;
         ArticleVideoItem item = items.get(position);
-        holder.title.setText(item.getTitle());
-        holder.description.setText(item.getDescription());
-        holder.typeLabel.setText(item.getType().equals("video") ? "🎬 Video" : "📰 Article");
 
-        holder.openLinkButton.setOnClickListener(v -> {
-            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(item.getLink()));
+        final String title = item.getTitle() == null ? "" : item.getTitle();
+        final String desc = item.getDescription() == null ? "" : item.getDescription();
+        final String link = item.getLink();
+
+        holder.title.setText(title);
+        holder.description.setText(desc);
+
+        // open when button pressed
+        holder.openLinkButton.setOnClickListener(v -> openLink(link));
+
+        // also open when title tapped
+        holder.title.setOnClickListener(v -> openLink(link));
+    }
+
+    private void openLink(String url) {
+        if (url == null || url.isEmpty()) return;
+        try {
+            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
             context.startActivity(browserIntent);
-        });
+        } catch (Exception ignored) {
+        }
     }
 
     @Override
     public int getItemCount() {
-        return items.size();
+        return items == null ? 0 : items.size();
     }
 
     public void updateList(List<ArticleVideoItem> newItems) {
@@ -55,12 +71,11 @@ public class ArticlesVideosAdapter extends RecyclerView.Adapter<ArticlesVideosAd
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        TextView title, description, typeLabel;
+        TextView title, description;
         Button openLinkButton;
 
-        public ViewHolder(View view) {
+        public ViewHolder(@NonNull View view) {
             super(view);
-            typeLabel = view.findViewById(R.id.type_label);
             title = view.findViewById(R.id.title);
             description = view.findViewById(R.id.description);
             openLinkButton = view.findViewById(R.id.open_link_button);

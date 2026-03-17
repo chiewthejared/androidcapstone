@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp" android:height="24dp"
+    android:viewportWidth="24" android:viewportHeight="24">
+    <!-- bold pill / capsule -->
+    <path android:fillColor="#FFFFFFFF" android:pathData="M21.6,10.4c1.2,1.2 1.2,3.2 0,4.4L14.6,21.8c-1.2,1.2 -3.2,1.2 -4.4,0L2.6,15c-1.2-1.2 -1.2-3.2 0-4.4l7.0-7.0c1.2-1.2 3.2-1.2 4.4,0L21.6,10.4zM8.7,15.3l6-6"/>
+</vector>

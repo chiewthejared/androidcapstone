@@ -10,14 +10,25 @@
     //
 
     <!-- Style for Number Pad Buttons -->
+    <!-- styles.xml (replace NumberPadButton) -->
     <style name="NumberPadButton">
-        <item name="android:layout_width">80dp</item>
-        <item name="android:layout_height">80dp</item>
-        <item name="android:backgroundTint">#CCCCCC</item> <!-- Light gray -->
-        <item name="android:textSize">24sp</item>
-        <item name="android:gravity">center</item>
+        <!-- background stays the same -->
+        <item name="android:background">@drawable/keypad_button_bg</item>
+
+        <!-- use the new color selector so text is white normally, golden on press -->
+        <item name="android:textColor">@color/number_text_color</item>
+
+        <item name="android:textSize">22sp</item>
         <item name="android:textStyle">bold</item>
-        <item name="android:layout_margin">8dp</item> <!-- Space between buttons -->
+
+        <!-- center the digits -->
+        <item name="android:gravity">center</item>
+
+        <!-- add spacing between buttons so they do not stick together -->
+        <item name="android:layout_margin">12dp</item>
+
+        <!-- ensure buttons don't inherit unwanted padding from parent -->
+        <item name="android:padding">0dp</item>
     </style>
 
     <style name="DayHeaderStyle">

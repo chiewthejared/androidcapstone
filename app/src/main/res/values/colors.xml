@@ -3,6 +3,23 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="teal">#018786</color>
-    <color name="forest_green">#0b3533</color> <!-- Hex for forest green -->
+    <color name="forest_green">#0b3533</color>
     <color name="dark_green">#0B3B33</color>
+    <color name="maroon_text">#eeb533</color>
+    <color name="port_wine">#8C1E41</color>
+    <color name="golden_yellow">#EEB533</color>
+    <color name="brand_green">#083533</color>
+    <color name="tile_background_translucent">#88FFFFFF</color>
+    <color name="tile_icon_color">#FFFFFFFF</color>
+    <color name="tile_label_color">#FFFFFFFF</color>
+    <color name="greeting_card_solid">#0B3B33</color>
+    <color name="home_background">#B68F92</color>
+    <!-- profile-specific helpers (add only if missing) -->
+    <color name="profile_background">#FFF7F7F9</color>  <!-- very light -->
+    <color name="teal_800">#024D47</color>               <!-- darker teal for header -->
+    <color name="secondary_text">#FF9E9E9E</color>
+    <color name="label_text">#FF8F8F8F</color>
+    <color name="divider">#11000000</color>
+    <color name="warn_orange">#FFEB8A48</color>
+    <color name="delete_red">#FFDF4A4A</color>
 </resources>
