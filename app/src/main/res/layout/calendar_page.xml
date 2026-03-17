@@ -1,42 +1,146 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
+    android:fillViewport="true"
     android:background="@android:color/white">
 
-    <!-- Header -->
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="vertical"
+        android:paddingStart="20dp"
+        android:paddingEnd="20dp"
+        android:paddingTop="18dp"
+        android:paddingBottom="18dp">
 
-        <View
-            android:layout_width="0dp"
-            android:layout_height="47dp"
-            android:layout_weight="1"
-            android:background="#FFD700" /> <!-- Gold color -->
+        <!-- Header -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
 
-        <View
-            android:layout_width="0dp"
-            android:layout_height="47dp"
-            android:layout_weight="1"
-            android:background="#8B0000" /> <!-- Magenta color -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tvTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Health Tracker"
+                    android:textSize="22sp"
+                    android:textStyle="bold"
+                    android:textColor="#111827" />
+
+                <TextView
+                    android:id="@+id/tvMonth"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="February 2026"
+                    android:textSize="14sp"
+                    android:textColor="#6B7280"
+                    android:layout_marginTop="4dp" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/btnRecords"
+                android:layout_width="wrap_content"
+                android:layout_height="32dp"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp"
+                android:gravity="center"
+                android:text="3 Records"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:textColor="#1D4ED8"
+                android:background="@drawable/bg_pill_records" />
+        </LinearLayout>
+
+        <!-- Month controls (prev/next) -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <ImageButton
+                android:id="@+id/btnPrevMonth"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@android:color/transparent"
+                android:src="@android:drawable/ic_media_previous"
+                android:contentDescription="Previous month" />
+
+            <TextView
+                android:id="@+id/tvMonthCenter"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="February 2026"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="#111827" />
+
+            <ImageButton
+                android:id="@+id/btnNextMonth"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@android:color/transparent"
+                android:src="@android:drawable/ic_media_next"
+                android:contentDescription="Next month" />
+        </LinearLayout>
+
+        <!-- Week header row -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:orientation="horizontal">
+
+            <TextView style="@style/MonthlyWeekday" android:text="SU"/>
+            <TextView style="@style/MonthlyWeekday" android:text="MO"/>
+            <TextView style="@style/MonthlyWeekday" android:text="TU"/>
+            <TextView style="@style/MonthlyWeekday" android:text="WE"/>
+            <TextView style="@style/MonthlyWeekday" android:text="TH"/>
+            <TextView style="@style/MonthlyWeekday" android:text="FR"/>
+            <TextView style="@style/MonthlyWeekday" android:text="SA"/>
+        </LinearLayout>
+
+        <!-- Calendar grid -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvCalendar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:nestedScrollingEnabled="false"
+            android:overScrollMode="never" />
+
+        <!-- Today's Logs -->
+        <TextView
+            android:id="@+id/tvLogsTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Today's Logs"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="#111827"
+            android:layout_marginTop="18dp"
+            android:layout_marginBottom="8dp" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvTodayLogs"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:nestedScrollingEnabled="false"
+            android:overScrollMode="never" />
 
     </LinearLayout>
-
-    <!-- TabLayout and ViewPager2 -->
-    <com.google.android.material.tabs.TabLayout
-        android:id="@+id/tabLayout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="#FFFFFF" />
-
-    <androidx.viewpager2.widget.ViewPager2
-        android:id="@+id/viewPager"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
-
-</LinearLayout>
+</androidx.core.widget.NestedScrollView>

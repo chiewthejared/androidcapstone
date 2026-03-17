@@ -11,7 +11,6 @@ import android.widget.TextView;
 import androidx.annotation.RequiresApi;
 
 import com.example.test_v2.R;
-import com.example.test_v2.calendar.MonthlyFragment;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -24,6 +23,8 @@ public class CalendarDayAdapter extends BaseAdapter {
     private final LocalDate currentMonth;
     private final OnDayClickListener listener;
 
+    private String selectedDate;
+
     public interface OnDayClickListener {
         void onDayClicked(String fullDate); // yyyy-M-d
     }
@@ -35,22 +36,19 @@ public class CalendarDayAdapter extends BaseAdapter {
         this.eventDates = eventDates;
         this.currentMonth = currentMonth;
         this.listener = listener;
+
+        // 默认选中今天（如果不在本月，后面 MonthlyFragment 会覆盖）
+        this.selectedDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-M-d"));
     }
 
-    @Override
-    public int getCount() {
-        return days.size();
+    public void setSelectedDate(String selectedDate) {
+        this.selectedDate = selectedDate;
+        notifyDataSetChanged();
     }
 
-    @Override
-    public Object getItem(int position) {
-        return days.get(position);
-    }
-
-    @Override
-    public long getItemId(int position) {
-        return position;
-    }
+    @Override public int getCount() { return days.size(); }
+    @Override public Object getItem(int position) { return days.get(position); }
+    @Override public long getItemId(int position) { return position; }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
@@ -60,25 +58,36 @@ public class CalendarDayAdapter extends BaseAdapter {
                 : LayoutInflater.from(context).inflate(R.layout.item_calendar_day, parent, false);
 
         TextView dayText = view.findViewById(R.id.calendarDayText);
+        View dot = view.findViewById(R.id.viewDot);
+        View selectedCircle = view.findViewById(R.id.viewSelectedCircle);
+
         String day = days.get(position);
+
+        if (day == null || day.isEmpty()) {
+            dayText.setText("");
+            dot.setVisibility(View.GONE);
+            selectedCircle.setVisibility(View.GONE);
+            view.setOnClickListener(null);
+            return view;
+        }
+
         dayText.setText(day);
 
-        if (!day.isEmpty()) {
-            LocalDate fullDate = currentMonth.withDayOfMonth(Integer.parseInt(day));
-            String formattedDate = fullDate.format(DateTimeFormatter.ofPattern("yyyy-M-d"));
+        LocalDate fullDate = currentMonth.withDayOfMonth(Integer.parseInt(day));
+        String formattedDate = fullDate.format(DateTimeFormatter.ofPattern("yyyy-M-d"));
 
-            if (eventDates.contains(formattedDate)) {
-                view.setBackgroundResource(R.drawable.bg_event_highlight);
-            } else {
-                view.setBackgroundResource(android.R.color.transparent);
-            }
+        boolean hasEvent = eventDates.contains(formattedDate);
+        dot.setVisibility(hasEvent ? View.VISIBLE : View.GONE);
 
-            view.setOnClickListener(v -> listener.onDayClicked(formattedDate));
-        } else {
-            dayText.setText("");
-            dayText.setBackgroundColor(0x00000000);
-            view.setOnClickListener(null); // disable click for empty cells
-        }
+        boolean isSelected = formattedDate.equals(selectedDate);
+        selectedCircle.setVisibility(isSelected ? View.VISIBLE : View.GONE);
+        dayText.setTextColor(isSelected ? 0xFFFFFFFF : 0xFF111827);
+
+        view.setOnClickListener(v -> {
+            selectedDate = formattedDate;
+            notifyDataSetChanged();
+            listener.onDayClicked(formattedDate);
+        });
 
         return view;
     }

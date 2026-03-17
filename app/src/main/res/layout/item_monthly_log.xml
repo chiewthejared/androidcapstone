@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="12dp"
+    android:background="#F9FAFB"
+    android:layout_marginBottom="10dp">
+
+    <TextView
+        android:id="@+id/tvLogTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="title"
+        android:textStyle="bold"
+        android:textSize="15sp"
+        android:textColor="#111827" />
+
+    <TextView
+        android:id="@+id/tvLogTime"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="08:00 - 09:00"
+        android:textSize="13sp"
+        android:textColor="#374151"
+        android:layout_marginTop="4dp"/>
+
+    <TextView
+        android:id="@+id/tvLogTag"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Tag"
+        android:textSize="12sp"
+        android:textColor="#6B7280"
+        android:layout_marginTop="2dp"/>
+</LinearLayout>
