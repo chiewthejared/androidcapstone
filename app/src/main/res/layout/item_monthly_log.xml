@@ -4,7 +4,7 @@
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:padding="12dp"
-    android:background="#F9FAFB"
+    android:background="@drawable/bg_log_item"
     android:layout_marginBottom="10dp">
 
     <TextView
@@ -33,4 +33,5 @@
         android:textSize="12sp"
         android:textColor="#6B7280"
         android:layout_marginTop="2dp"/>
+
 </LinearLayout>

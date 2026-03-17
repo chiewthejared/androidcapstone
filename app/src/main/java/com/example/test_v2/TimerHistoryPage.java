@@ -162,19 +162,53 @@ public class TimerHistoryPage extends AppCompatActivity implements TimerHistoryA
     // Adapter callback — create calendar intent for the event
     @Override
     public void onAddToCalendar(final HelperTimerEvent event) {
-        long start = event.startTimestamp;
-        long end = start + Math.max(1000, event.totalTimeMs);
-        Intent intent = new Intent(Intent.ACTION_INSERT)
-                .setData(CalendarContract.Events.CONTENT_URI)
-                .putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, start)
-                .putExtra(CalendarContract.EXTRA_EVENT_END_TIME, end)
-                .putExtra(CalendarContract.Events.TITLE, event.eventName != null ? event.eventName : "Timer Event")
-                .putExtra(CalendarContract.Events.DESCRIPTION, event.actionLog != null ? event.actionLog : "");
-        try {
-            startActivity(intent);
-        } catch (ActivityNotFoundException ex) {
-            Toast.makeText(this, "No calendar app available", Toast.LENGTH_SHORT).show();
-        }
+
+        java.util.Calendar cal = java.util.Calendar.getInstance();
+        cal.setTimeInMillis(event.startTimestamp);
+        String dateStr = cal.get(java.util.Calendar.YEAR) + "-"
+                + (cal.get(java.util.Calendar.MONTH) + 1) + "-"
+                + cal.get(java.util.Calendar.DAY_OF_MONTH);
+
+
+        java.text.SimpleDateFormat timeFmt = new java.text.SimpleDateFormat("hh:mm a", java.util.Locale.getDefault());
+        String startTime = timeFmt.format(new java.util.Date(event.startTimestamp));
+        long endMillis = event.startTimestamp + Math.max(1000, event.totalTimeMs);
+        String endTime = timeFmt.format(new java.util.Date(endMillis));
+
+        String title = (event.eventName != null && !event.eventName.isEmpty())
+                ? event.eventName : "Seizure";
+
+        // add to database
+        new Thread(() -> {
+            String myPin = getSharedPreferences("UserSession", MODE_PRIVATE)
+                    .getString("loggedInPin", "");
+
+            com.example.test_v2.calendar.HelperEvent calEvent = new com.example.test_v2.calendar.HelperEvent(
+                    java.util.UUID.randomUUID().toString(),
+                    title,
+                    event.notes != null ? event.notes : "",
+                    dateStr,
+                    startTime,
+                    endTime,
+                    "Seizure",
+                    "No Repeat",
+                    1,
+                    java.util.UUID.randomUUID().toString(),
+                    myPin
+            );
+
+            db.eventDao().insert(calEvent);
+
+
+            runOnUiThread(() -> {
+                Toast.makeText(this, "Successfully added to Calendar！", Toast.LENGTH_SHORT).show();
+                adapter.markAsAdded(event.id); // ← 这行有没有？
+            });
+
+
+
+
+        }).start();
     }
 
     // Confirm and delete all events for current user by iterating and calling deleteById

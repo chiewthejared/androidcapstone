@@ -8,7 +8,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fillViewport="true"
-        android:background="@android:color/white">
+        android:background="@drawable/bg_calendar_gradient">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -54,7 +54,7 @@
                         android:id="@+id/tvMonth"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="February 2026"
+                        android:text="today"
                         android:textSize="14sp"
                         android:textColor="#6B7280"
                         android:layout_marginTop="4dp" />
@@ -140,7 +140,7 @@
                 android:id="@+id/tvLogsTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Today's Logs"
+                android:text="Today's Events"
                 android:textSize="16sp"
                 android:textStyle="bold"
                 android:textColor="#111827"

@@ -84,7 +84,6 @@
             android:text="Duration: 3s"
             android:textColor="#666666"/>
 
-        <!-- Use MaterialButton (outline) instead of missing drawable background -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/add_calendar_btn"
             android:layout_marginTop="10dp"

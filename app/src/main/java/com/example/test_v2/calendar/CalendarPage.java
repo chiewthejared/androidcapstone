@@ -50,8 +50,11 @@ public class CalendarPage extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.calendar_page);
 
-        // Back button — 用你自己的 drawable
+
         ImageButton btnBack = findViewById(R.id.btnBack);
+        TextView tvMonth = findViewById(R.id.tvMonth);
+        tvMonth.setText(LocalDate.now().format(DateTimeFormatter.ofPattern("MMMM d, yyyy")));
+
         btnBack.setOnClickListener(v -> finish());
 
         tvMonthCenter = findViewById(R.id.tvMonthCenter);
@@ -180,9 +183,9 @@ public class CalendarPage extends AppCompatActivity {
     @RequiresApi(api = Build.VERSION_CODES.O)
     private void updateLogsTitle() {
         if (selectedDate.equals(LocalDate.now())) {
-            tvLogsTitle.setText("Today's Logs");
+            tvLogsTitle.setText("Today's Events");
         } else {
-            tvLogsTitle.setText("Logs on " + selectedDate);
+            tvLogsTitle.setText("Events on " + selectedDate);
         }
     }
 
