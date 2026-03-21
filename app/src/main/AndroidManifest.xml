@@ -34,7 +34,7 @@
         <activity android:name=".AnalyticsPage" />
         <activity android:name=".articlesvideos.ArticlesVideosPage" />
         <activity android:name=".calendar.CalendarPage" />
-        <activity android:name=".doctorInfo.DoctorInfoPage" />
+        <activity android:name=".doctorInfo.DoctorInfoPage" android:label="Doctor Info" />
         <activity android:name=".medsEquipment.MedsAndEquipmentTrackerPage" />
         <activity android:name=".notes.NotesPage" />
         <activity android:name=".TimerPage" />

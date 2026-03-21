@@ -186,7 +186,7 @@ public class HomePage extends AppCompatActivity {
      * the first valid Activity. If none found, shows a helpful Toast with attempted class names.
      */
     private void openForTile(String label) {
-        String[] candidates;
+        String[] candidates = null;
 
         switch (label) {
             case "Calendar":
@@ -210,14 +210,17 @@ public class HomePage extends AppCompatActivity {
                         "com.example.test_v2.medsEquipment.MedsEquipmentPage"
                 };
                 break;
-            case "Doctor Info":
-                candidates = new String[] {
-                        "com.example.test_v2.doctorinfo.DoctorInfoPage",
-                        "com.example.test_v2.doctorinfo.DoctorInfoActivity",
-                        "com.example.test_v2.doctor.DoctorInfoPage",
-                        "com.example.test_v2.doctorinfo.DoctorInfo"
-                };
+            case "Doctor Info": {
+                try {
+                    // Directly start the existing activity in the doctorInfo package (case-sensitive)
+                    Intent intent = new Intent(this, com.example.test_v2.doctorInfo.DoctorInfoPage.class);
+                    startActivity(intent);
+                } catch (Exception e) {
+                    // If something goes wrong, show a helpful message so we can debug
+                    Toast.makeText(this, "Failed to open Doctor Info: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                }
                 break;
+            }
             case "Analytics":
                 candidates = new String[] {
                         "com.example.test_v2.timer.AnalyticsPage",
