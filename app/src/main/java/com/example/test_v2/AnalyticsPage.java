@@ -1,22 +1,18 @@
 package com.example.test_v2;
 
-import android.app.AlertDialog;
-import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
-import com.example.test_v2.calendar.HelperEvent;
 import com.example.test_v2.fileAndDatabase.HelperAppDatabase;
-import com.example.test_v2.tags.Tag;
+import com.example.test_v2.timer.HelperTimerEvent;
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.XAxis;
@@ -27,41 +23,45 @@ import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
 import com.github.mikephil.charting.formatter.ValueFormatter;
 
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.YearMonth;
-import java.time.format.DateTimeFormatter;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 
+@RequiresApi(api = Build.VERSION_CODES.O)
 public class AnalyticsPage extends AppCompatActivity {
 
     private Spinner spinnerTimeRange, spinnerDayMonthYear, spinnerYear;
-    private Button buttonSelectTags, backButton, testButton;
+    private Spinner spinnerBarWeekFilter, spinnerLineWeekFilter;
+    private Button buttonSelectTags, backButton;
     private BarChart barChart;
     private LineChart lineChart;
 
-    private List<String> allTags = new ArrayList<>();
-    private boolean[] checkedTags;
-    private List<String> selectedTags = new ArrayList<>();
-
-    // Distinct colors for each tag
-    private final int[] TAG_COLORS = {
-            Color.RED, Color.BLUE, Color.GREEN, Color.MAGENTA, Color.CYAN,
-            Color.rgb(255, 165, 0),   // Orange
-            Color.rgb(128, 0, 128)    // Purple
-    };
-
-    // Month names for dropdown and formatting in year view
     private final String[] MONTH_NAMES = {
             "January", "February", "March", "April", "May", "June",
             "July", "August", "September", "October", "November", "December"
     };
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
+    private final String[] WEEKDAY_NAMES = {
+            "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"
+    };
+
+    private boolean isUpdatingFilters = false;
+
+    private static class ChartBundle {
+        List<String> labels = new ArrayList<>();
+        List<BarEntry> barEntries = new ArrayList<>();
+        List<Entry> lineEntries = new ArrayList<>();
+        String title = "";
+        boolean dailyView = false;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -70,441 +70,447 @@ public class AnalyticsPage extends AppCompatActivity {
         spinnerTimeRange = findViewById(R.id.spinner_time_range);
         spinnerDayMonthYear = findViewById(R.id.spinner_day_month_year);
         spinnerYear = findViewById(R.id.spinner_year);
+        spinnerBarWeekFilter = findViewById(R.id.spinner_bar_week_filter);
+        spinnerLineWeekFilter = findViewById(R.id.spinner_line_week_filter);
         buttonSelectTags = findViewById(R.id.button_select_tags);
         backButton = findViewById(R.id.back_button);
-        testButton = findViewById(R.id.test_button);
         barChart = findViewById(R.id.barChart);
         lineChart = findViewById(R.id.lineChart);
 
-        // Only "Month" and "Year" views now
         ArrayAdapter<String> rangeAdapter = new ArrayAdapter<>(
                 this,
                 android.R.layout.simple_spinner_item,
-                Arrays.asList("Month", "Year")
+                Arrays.asList("Monthly", "Yearly")
         );
         rangeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerTimeRange.setAdapter(rangeAdapter);
+        spinnerTimeRange.setSelection(0);
 
-        spinnerTimeRange.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                updateSpinners();
+        buttonSelectTags.setText("Refresh");
+        buttonSelectTags.setOnClickListener(v -> fetchAndDisplayCharts());
+        backButton.setOnClickListener(v -> finish());
+
+        spinnerTimeRange.setOnItemSelectedListener(new SimpleItemSelectedListener() {
+            @Override
+            public void onSelected() {
+                updateMainSpinners();
             }
-            @Override public void onNothingSelected(AdapterView<?> parent) {}
         });
 
-        spinnerDayMonthYear.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                fetchAndDisplayCharts();
-            }
-            @Override public void onNothingSelected(AdapterView<?> parent) {}
-        });
-
-        spinnerYear.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                // Only used in month view – refresh charts when year selection changes.
-                if ("Month".equals(spinnerTimeRange.getSelectedItem())) {
+        spinnerDayMonthYear.setOnItemSelectedListener(new SimpleItemSelectedListener() {
+            @Override
+            public void onSelected() {
+                if (!isUpdatingFilters) {
+                    updateWeekFilters();
                     fetchAndDisplayCharts();
                 }
             }
-            @Override public void onNothingSelected(AdapterView<?> parent) {}
         });
 
-        buttonSelectTags.setOnClickListener(v -> showTagSelectionDialog());
-        backButton.setOnClickListener(v -> finish());
-        testButton.setOnClickListener(v -> populateTestData());
-
-        // Load all tags in background.
-        new Thread(() -> {
-            List<Tag> tags = HelperAppDatabase.getDatabase(getApplicationContext()).tagDao().getAll();
-            for (Tag t : tags) {
-                allTags.add(t.name);
+        spinnerYear.setOnItemSelectedListener(new SimpleItemSelectedListener() {
+            @Override
+            public void onSelected() {
+                if (!isUpdatingFilters) {
+                    updateWeekFilters();
+                    fetchAndDisplayCharts();
+                }
             }
-            checkedTags = new boolean[allTags.size()];
-        }).start();
+        });
+
+        spinnerBarWeekFilter.setOnItemSelectedListener(new SimpleItemSelectedListener() {
+            @Override
+            public void onSelected() {
+                if (!isUpdatingFilters) {
+                    fetchAndDisplayCharts();
+                }
+            }
+        });
+
+        spinnerLineWeekFilter.setOnItemSelectedListener(new SimpleItemSelectedListener() {
+            @Override
+            public void onSelected() {
+                if (!isUpdatingFilters) {
+                    fetchAndDisplayCharts();
+                }
+            }
+        });
 
         setupChartProperties();
-        updateSpinners();
+        updateMainSpinners();
     }
 
-    /**
-     * Updates the spinners:
-     * - If time range is "Month", spinnerDayMonthYear shows months and spinnerYear is visible.
-     * - If time range is "Year", spinnerDayMonthYear shows years and spinnerYear is hidden.
-     */
-    private void updateSpinners() {
-        String range = (String) spinnerTimeRange.getSelectedItem();
-        List<String> data = new ArrayList<>();
-        if ("Month".equals(range)) {
-            data.addAll(Arrays.asList(MONTH_NAMES));
-            spinnerYear.setVisibility(View.VISIBLE);
-            // Populate spinnerYear with years (e.g., 2023-2030)
-            List<String> years = new ArrayList<>();
-            for (int y = 2023; y <= 2030; y++) {
-                years.add(String.valueOf(y));
-            }
-            ArrayAdapter<String> yearAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, years);
-            yearAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-            spinnerYear.setAdapter(yearAdapter);
-        } else {
-            for (int y = 2023; y <= 2030; y++) {
-                data.add(String.valueOf(y));
-            }
-            spinnerYear.setVisibility(View.GONE);
+    private abstract static class SimpleItemSelectedListener implements android.widget.AdapterView.OnItemSelectedListener {
+        @Override
+        public void onItemSelected(android.widget.AdapterView<?> parent, View view, int position, long id) {
+            onSelected();
         }
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
-                android.R.layout.simple_spinner_item, data);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnerDayMonthYear.setAdapter(adapter);
+
+        @Override
+        public void onNothingSelected(android.widget.AdapterView<?> parent) { }
+
+        public abstract void onSelected();
     }
 
-    /**
-     * Shows the multi-choice dialog for selecting tags.
-     */
-    private void showTagSelectionDialog() {
-        if (allTags.isEmpty()) {
-            new AlertDialog.Builder(this)
-                    .setMessage("No tags available.")
-                    .setPositiveButton("OK", null)
-                    .show();
+    private void updateMainSpinners() {
+        isUpdatingFilters = true;
+
+        String range = String.valueOf(spinnerTimeRange.getSelectedItem());
+        LocalDate now = LocalDate.now();
+        int currentYear = now.getYear();
+
+        List<String> years = buildYearList(currentYear);
+        ArrayAdapter<String> yearAdapter = new ArrayAdapter<>(
+                this,
+                android.R.layout.simple_spinner_item,
+                years
+        );
+        yearAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+        if ("Monthly".equals(range)) {
+            spinnerYear.setVisibility(View.VISIBLE);
+            spinnerYear.setAdapter(yearAdapter);
+
+            ArrayAdapter<String> monthAdapter = new ArrayAdapter<>(
+                    this,
+                    android.R.layout.simple_spinner_item,
+                    Arrays.asList(MONTH_NAMES)
+            );
+            monthAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            spinnerDayMonthYear.setAdapter(monthAdapter);
+            spinnerDayMonthYear.setSelection(now.getMonthValue() - 1);
+
+            int yearIndex = years.indexOf(String.valueOf(currentYear));
+            spinnerYear.setSelection(Math.max(0, yearIndex));
+        } else {
+            spinnerYear.setVisibility(View.GONE);
+
+            ArrayAdapter<String> yearlyAdapter = new ArrayAdapter<>(
+                    this,
+                    android.R.layout.simple_spinner_item,
+                    years
+            );
+            yearlyAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            spinnerDayMonthYear.setAdapter(yearlyAdapter);
+
+            int yearIndex = years.indexOf(String.valueOf(currentYear));
+            spinnerDayMonthYear.setSelection(Math.max(0, yearIndex));
+        }
+
+        updateWeekFilters();
+        isUpdatingFilters = false;
+        fetchAndDisplayCharts();
+    }
+
+    private void updateWeekFilters() {
+        String range = String.valueOf(spinnerTimeRange.getSelectedItem());
+        if (!"Monthly".equals(range)) {
+            spinnerBarWeekFilter.setVisibility(View.GONE);
+            spinnerLineWeekFilter.setVisibility(View.GONE);
             return;
         }
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Select Tags");
-        builder.setMultiChoiceItems(allTags.toArray(new String[0]), checkedTags, (dialog, which, isChecked) -> {
-            checkedTags[which] = isChecked;
-        });
-        builder.setPositiveButton("OK", (dialog, which) -> {
-            selectedTags.clear();
-            for (int i = 0; i < allTags.size(); i++) {
-                if (checkedTags[i]) {
-                    selectedTags.add(allTags.get(i));
-                }
-            }
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                fetchAndDisplayCharts();
-            }
-        });
-        builder.setNegativeButton("Cancel", null);
-        builder.show();
+
+        spinnerBarWeekFilter.setVisibility(View.VISIBLE);
+        spinnerLineWeekFilter.setVisibility(View.VISIBLE);
+
+        int selectedYear = getSelectedYear();
+        int selectedMonth = getSelectedMonth();
+        int weekCount = getMonthWeekCount(selectedYear, selectedMonth);
+
+        List<String> filterItems = new ArrayList<>();
+        filterItems.add("All");
+        for (int i = 1; i <= weekCount; i++) {
+            filterItems.add("Week " + i);
+        }
+
+        ArrayAdapter<String> filterAdapter = new ArrayAdapter<>(
+                this,
+                android.R.layout.simple_spinner_item,
+                filterItems
+        );
+        filterAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+        spinnerBarWeekFilter.setAdapter(filterAdapter);
+        spinnerLineWeekFilter.setAdapter(filterAdapter);
+
+        spinnerBarWeekFilter.setSelection(0);
+        spinnerLineWeekFilter.setSelection(0);
     }
 
-    /**
-     * Retrieves the current user session ID.
-     */
+    private List<String> buildYearList(int currentYear) {
+        List<String> years = new ArrayList<>();
+        for (int y = currentYear - 5; y <= currentYear + 5; y++) {
+            years.add(String.valueOf(y));
+        }
+        return years;
+    }
+
     private String getCurrentSession() {
-        SharedPreferences preferences = getSharedPreferences("UserSession", MODE_PRIVATE);
-        return preferences.getString("loggedInPin", "");
+        return getSharedPreferences("UserSession", MODE_PRIVATE)
+                .getString("loggedInPin", "");
     }
 
-    /**
-     * Queries events for the current user, filters by selected tags & month/year,
-     * then updates the charts.
-     */
-    @RequiresApi(api = Build.VERSION_CODES.O)
+    private int getSelectedYear() {
+        String range = String.valueOf(spinnerTimeRange.getSelectedItem());
+        if ("Monthly".equals(range)) {
+            return safeParseInt(String.valueOf(spinnerYear.getSelectedItem()), LocalDate.now().getYear());
+        }
+        return safeParseInt(String.valueOf(spinnerDayMonthYear.getSelectedItem()), LocalDate.now().getYear());
+    }
+
+    private int getSelectedMonth() {
+        String monthName = String.valueOf(spinnerDayMonthYear.getSelectedItem());
+        for (int i = 0; i < MONTH_NAMES.length; i++) {
+            if (MONTH_NAMES[i].equalsIgnoreCase(monthName)) {
+                return i + 1;
+            }
+        }
+        return LocalDate.now().getMonthValue();
+    }
+
     private void fetchAndDisplayCharts() {
         new Thread(() -> {
-            String range = (String) spinnerTimeRange.getSelectedItem();
-            String selection = (String) spinnerDayMonthYear.getSelectedItem();
-            String session = getCurrentSession();
+            HelperAppDatabase db = HelperAppDatabase.getDatabase(getApplicationContext());
+            List<HelperTimerEvent> events = db.timerEventDao().getAllEventsForUser(getCurrentSession());
 
-            // Retrieve all events for the user.
-            List<HelperEvent> allEvents = HelperAppDatabase
-                    .getDatabase(getApplicationContext())
-                    .eventDao()
-                    .getAllEventsRawForUser(session);
+            String range = String.valueOf(spinnerTimeRange.getSelectedItem());
+            String selectedPeriod = String.valueOf(spinnerDayMonthYear.getSelectedItem());
+            String selectedYear = spinnerYear.getVisibility() == View.VISIBLE
+                    ? String.valueOf(spinnerYear.getSelectedItem())
+                    : selectedPeriod;
 
-            List<HelperEvent> filtered = new ArrayList<>();
-            for (HelperEvent ev : allEvents) {
-                // Filter by tag (case-insensitive)
-                if (selectedTags.isEmpty() || selectedTags.stream().anyMatch(tag -> tag.equalsIgnoreCase(ev.getTag()))) {
-                    if (fitsRange(ev.getDate(), range, selection)) {
-                        filtered.add(ev);
-                    }
-                }
-            }
+            String barFilter = spinnerBarWeekFilter.getVisibility() == View.VISIBLE
+                    ? String.valueOf(spinnerBarWeekFilter.getSelectedItem())
+                    : "All";
+            String lineFilter = spinnerLineWeekFilter.getVisibility() == View.VISIBLE
+                    ? String.valueOf(spinnerLineWeekFilter.getSelectedItem())
+                    : "All";
 
-            // Build data for charts using filtered events.
-            HashMap<String, HashMap<Integer, Integer>> dataMap = new HashMap<>();
-            for (String tag : selectedTags) {
-                dataMap.put(tag, new HashMap<>());
-            }
-            for (HelperEvent ev : filtered) {
-                String t = ev.getTag();
-                dataMap.putIfAbsent(t, new HashMap<>());
-                int xVal = computeXValue(ev.getDate(), range, selection);
-                int count = dataMap.get(t).getOrDefault(xVal, 0);
-                dataMap.get(t).put(xVal, count + 1);
-            }
+            ChartBundle barBundle = buildChartBundle(events, range, selectedPeriod, selectedYear, barFilter);
+            ChartBundle lineBundle = buildChartBundle(events, range, selectedPeriod, selectedYear, lineFilter);
 
-            BarData barData = buildBarData(dataMap);
-            LineData lineData = buildLineData(dataMap);
-
-            runOnUiThread(() -> {
-                barChart.setData(barData);
-                lineChart.setData(lineData);
-
-                // Adjust X axis based on selected view.
-                XAxis xBar = barChart.getXAxis();
-                XAxis xLine = lineChart.getXAxis();
-
-                if ("Month".equals(spinnerTimeRange.getSelectedItem())) {
-                    int month = monthNameToInt((String) spinnerDayMonthYear.getSelectedItem());
-                    int year;
-                    try {
-                        year = Integer.parseInt(spinnerYear.getSelectedItem().toString());
-                    } catch (NumberFormatException e) {
-                        year = LocalDate.now().getYear();
-                    }
-                    YearMonth yearMonth = YearMonth.of(year, month);
-                    int daysInMonth = yearMonth.lengthOfMonth();
-
-                    xBar.setAxisMinimum(1f);
-                    xBar.setAxisMaximum(daysInMonth + 0.5f);
-                    xLine.setAxisMinimum(1f);
-                    xLine.setAxisMaximum(daysInMonth + 0.5f);
-
-                    ValueFormatter dayFormatter = new ValueFormatter() {
-                        @Override
-                        public String getFormattedValue(float value) {
-                            return String.valueOf((int) value);
-                        }
-                    };
-                    xBar.setValueFormatter(dayFormatter);
-                    xLine.setValueFormatter(dayFormatter);
-                } else {
-                    xBar.setAxisMinimum(1f);
-                    xBar.setAxisMaximum(12.5f);
-                    xLine.setAxisMinimum(1f);
-                    xLine.setAxisMaximum(12.5f);
-
-                    ValueFormatter monthFormatter = new ValueFormatter() {
-                        @Override
-                        public String getFormattedValue(float value) {
-                            int index = (int) value - 1;
-                            if (index >= 0 && index < MONTH_NAMES.length) {
-                                return MONTH_NAMES[index];
-                            }
-                            return "";
-                        }
-                    };
-                    xBar.setValueFormatter(monthFormatter);
-                    xLine.setValueFormatter(monthFormatter);
-                }
-
-                barChart.invalidate();
-                lineChart.invalidate();
-            });
+            runOnUiThread(() -> renderCharts(barBundle, lineBundle));
         }).start();
     }
 
-    /**
-     * Test button: Populates the charts with fake data.
-     */
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    private void populateTestData() {
-        String range = (String) spinnerTimeRange.getSelectedItem();
-        int maxX = "Month".equals(range) ? 28 : 12;
-        List<String> testTags = Arrays.asList("Work", "Personal", "Urgent", "None");
-        HashMap<String, HashMap<Integer, Integer>> dataMap = new HashMap<>();
-        for (String tag : testTags) {
-            HashMap<Integer, Integer> counts = new HashMap<>();
-            for (int x = 1; x <= maxX; x++) {
-                int count = (int) (Math.random() * 10);
-                counts.put(x, count);
-            }
-            dataMap.put(tag, counts);
-        }
-        BarData barData = buildBarData(dataMap);
-        LineData lineData = buildLineData(dataMap);
-        runOnUiThread(() -> {
-            barChart.setData(barData);
-            lineChart.setData(lineData);
+    private ChartBundle buildChartBundle(List<HelperTimerEvent> events,
+                                         String range,
+                                         String selectedPeriod,
+                                         String selectedYearStr,
+                                         String weekFilter) {
+        ChartBundle bundle = new ChartBundle();
+        int selectedYear = safeParseInt(selectedYearStr, LocalDate.now().getYear());
 
-            XAxis xBar = barChart.getXAxis();
-            XAxis xLine = lineChart.getXAxis();
-            if ("Month".equals(spinnerTimeRange.getSelectedItem())) {
-                int month = monthNameToInt((String) spinnerDayMonthYear.getSelectedItem());
-                int year = LocalDate.now().getYear();
-                YearMonth yearMonth = YearMonth.of(year, month);
-                int daysInMonth = yearMonth.lengthOfMonth();
+        if ("Monthly".equals(range)) {
+            int month = monthNameToInt(selectedPeriod);
+            YearMonth ym = YearMonth.of(selectedYear, month);
+            int weekCount = getMonthWeekCount(selectedYear, month);
 
-                xBar.setAxisMinimum(1f);
-                xBar.setAxisMaximum(daysInMonth + 0.5f);
-                xLine.setAxisMinimum(1f);
-                xLine.setAxisMaximum(daysInMonth + 0.5f);
+            if ("All".equalsIgnoreCase(weekFilter)) {
+                bundle.dailyView = false;
+                long[] countByWeek = new long[weekCount];
+                long[] durationByWeekSeconds = new long[weekCount];
 
-                ValueFormatter dayFormatter = new ValueFormatter() {
-                    @Override
-                    public String getFormattedValue(float value) {
-                        return String.valueOf((int) value);
-                    }
-                };
-                xBar.setValueFormatter(dayFormatter);
-                xLine.setValueFormatter(dayFormatter);
-            } else {
-                xBar.setAxisMinimum(1f);
-                xBar.setAxisMaximum(12.5f);
-                xLine.setAxisMinimum(1f);
-                xLine.setAxisMaximum(12.5f);
-
-                ValueFormatter monthFormatter = new ValueFormatter() {
-                    @Override
-                    public String getFormattedValue(float value) {
-                        int index = (int) value - 1;
-                        if (index >= 0 && index < MONTH_NAMES.length) {
-                            return MONTH_NAMES[index];
+                for (HelperTimerEvent event : events) {
+                    LocalDate date = toLocalDate(event.startTimestamp);
+                    if (date.getYear() == selectedYear && date.getMonthValue() == month) {
+                        int weekIndex = (date.getDayOfMonth() - 1) / 7;
+                        if (weekIndex >= weekCount) {
+                            weekIndex = weekCount - 1;
                         }
-                        return "";
+                        countByWeek[weekIndex]++;
+                        durationByWeekSeconds[weekIndex] += Math.max(0L, event.totalTimeMs) / 1000L;
                     }
-                };
-                xBar.setValueFormatter(monthFormatter);
-                xLine.setValueFormatter(monthFormatter);
-            }
-
-            barChart.invalidate();
-            lineChart.invalidate();
-        });
-    }
-
-    /**
-     * Returns true if the event's date is in the selected month (current year) or year.
-     */
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    private boolean fitsRange(String eventDate, String range, String selection) {
-        try {
-            LocalDate d = LocalDate.parse(eventDate, DateTimeFormatter.ofPattern("[yyyy-M-d][yyyy-MM-dd]"));
-            if ("Month".equals(range)) {
-                int monthIndex = monthNameToInt(selection);
-                int year;
-                try {
-                    year = Integer.parseInt(spinnerYear.getSelectedItem().toString());
-                } catch (NumberFormatException e) {
-                    year = LocalDate.now().getYear();
                 }
-                return (d.getYear() == year) && (d.getMonthValue() == monthIndex);
-            }
-            else {
-                int year = Integer.parseInt(selection);
-                return d.getYear() == year;
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
 
-    /**
-     * Computes the X-axis value.
-     */
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    private int computeXValue(String eventDate, String range, String selection) {
-        try {
-            LocalDate d = LocalDate.parse(eventDate, DateTimeFormatter.ofPattern("[yyyy-M-d][yyyy-MM-dd]"));
-            return "Month".equals(range) ? d.getDayOfMonth() : d.getMonthValue();
-        } catch (Exception e) {
-            return 1;
-        }
-    }
-
-    /**
-     * Builds BarData for the chart.
-     */
-    private BarData buildBarData(HashMap<String, HashMap<Integer, Integer>> dataMap) {
-        List<BarDataSet> sets = new ArrayList<>();
-        int index = 0;
-        for (String tag : dataMap.keySet()) {
-            List<BarEntry> entries = new ArrayList<>();
-            for (int xVal : dataMap.get(tag).keySet()) {
-                float x = xVal + (0.1f * index);
-                entries.add(new BarEntry(x, dataMap.get(tag).get(xVal)));
-            }
-            BarDataSet set = new BarDataSet(entries, tag);
-            set.setColor(TAG_COLORS[index % TAG_COLORS.length]);
-            set.setValueFormatter(new ValueFormatter() {
-                @Override
-                public String getFormattedValue(float value) {
-                    return String.valueOf((int) value);
+                bundle.labels = new ArrayList<>();
+                for (int i = 1; i <= weekCount; i++) {
+                    bundle.labels.add("Week " + i);
                 }
-            });
-            sets.add(set);
-            index++;
-        }
-        BarData barData = new BarData();
-        for (BarDataSet s : sets) {
-            barData.addDataSet(s);
-        }
-        barData.setBarWidth(0.8f / Math.max(1, sets.size()));
-        return barData;
-    }
 
-    /**
-     * Builds LineData for the chart.
-     */
-    private LineData buildLineData(HashMap<String, HashMap<Integer, Integer>> dataMap) {
-        List<LineDataSet> sets = new ArrayList<>();
-        int index = 0;
-        for (String tag : dataMap.keySet()) {
-            List<Entry> entries = new ArrayList<>();
-            for (int xVal : dataMap.get(tag).keySet()) {
-                float x = xVal + (0.1f * index);
-                entries.add(new Entry(x, dataMap.get(tag).get(xVal)));
-            }
-            LineDataSet lineSet = new LineDataSet(entries, tag);
-            lineSet.setColor(TAG_COLORS[index % TAG_COLORS.length]);
-            lineSet.setCircleColor(TAG_COLORS[index % TAG_COLORS.length]);
-            lineSet.setLineWidth(2f);
-            lineSet.setValueFormatter(new ValueFormatter() {
-                @Override
-                public String getFormattedValue(float value) {
-                    return String.valueOf((int) value);
+                for (int i = 0; i < weekCount; i++) {
+                    bundle.barEntries.add(new BarEntry(i, countByWeek[i]));
+                    bundle.lineEntries.add(new Entry(i, durationByWeekSeconds[i]));
                 }
-            });
-            sets.add(lineSet);
-            index++;
+            } else {
+                bundle.dailyView = true;
+                int weekNum = extractNumber(weekFilter);
+                int startDay = (weekNum - 1) * 7 + 1;
+                int endDay = Math.min(weekNum * 7, ym.lengthOfMonth());
+
+                long[] countByDay = new long[7];
+                long[] durationByDaySeconds = new long[7];
+
+                for (HelperTimerEvent event : events) {
+                    LocalDate date = toLocalDate(event.startTimestamp);
+                    if (date.getYear() == selectedYear
+                            && date.getMonthValue() == month
+                            && date.getDayOfMonth() >= startDay
+                            && date.getDayOfMonth() <= endDay) {
+                        int bucket = date.getDayOfWeek().getValue() - 1; // Mon=0 ... Sun=6
+                        if (bucket >= 0 && bucket < 7) {
+                            countByDay[bucket]++;
+                            durationByDaySeconds[bucket] += Math.max(0L, event.totalTimeMs) / 1000L;
+                        }
+                    }
+                }
+
+                bundle.labels = Arrays.asList(WEEKDAY_NAMES);
+                for (int i = 0; i < 7; i++) {
+                    bundle.barEntries.add(new BarEntry(i, countByDay[i]));
+                    bundle.lineEntries.add(new Entry(i, durationByDaySeconds[i]));
+                }
+            }
+
+            bundle.title = MONTH_NAMES[month - 1] + " " + selectedYear;
+        } else {
+            bundle.dailyView = false;
+            long[] countByMonth = new long[12];
+            long[] durationByMonthSeconds = new long[12];
+
+            for (HelperTimerEvent event : events) {
+                LocalDate date = toLocalDate(event.startTimestamp);
+                if (date.getYear() == selectedYear) {
+                    int index = date.getMonthValue() - 1;
+                    countByMonth[index]++;
+                    durationByMonthSeconds[index] += Math.max(0L, event.totalTimeMs) / 1000L;
+                }
+            }
+
+            bundle.labels = Arrays.asList(MONTH_NAMES);
+            for (int i = 0; i < 12; i++) {
+                bundle.barEntries.add(new BarEntry(i, countByMonth[i]));
+                bundle.lineEntries.add(new Entry(i, durationByMonthSeconds[i]));
+            }
+
+            bundle.title = String.valueOf(selectedYear);
         }
-        LineData lineData = new LineData();
-        for (LineDataSet s : sets) {
-            lineData.addDataSet(s);
-        }
-        return lineData;
+
+        return bundle;
     }
 
-    /**
-     * Configures common chart properties.
-     */
-    private void setupChartProperties() {
-        YAxis leftAxisBar = barChart.getAxisLeft();
-        leftAxisBar.setGranularity(1f);
-        leftAxisBar.setGranularityEnabled(true);
-        leftAxisBar.setAxisMinimum(0f);
-        leftAxisBar.setTextSize(14f);
+    private int getMonthWeekCount(int year, int month) {
+        YearMonth ym = YearMonth.of(year, month);
+        return (int) Math.ceil(ym.lengthOfMonth() / 7.0);
+    }
+
+    private LocalDate toLocalDate(long timestampMs) {
+        return Instant.ofEpochMilli(timestampMs)
+                .atZone(ZoneId.systemDefault())
+                .toLocalDate();
+    }
+
+    private void renderCharts(ChartBundle barBundle, ChartBundle lineBundle) {
+        if (barBundle == null || lineBundle == null) return;
+
+        int maroon = ContextCompat.getColor(this, R.color.port_wine);
+
+        BarDataSet barSet = new BarDataSet(barBundle.barEntries, "Seizure Count");
+        barSet.setColor(maroon);
+        barSet.setValueTextSize(11f);
+        barSet.setDrawValues(false);
+
+        LineDataSet lineSet = new LineDataSet(lineBundle.lineEntries, "Total Duration (sec)");
+        lineSet.setColor(maroon);
+        lineSet.setCircleColor(maroon);
+        lineSet.setCircleRadius(4f);
+        lineSet.setDrawCircles(true);
+        lineSet.setDrawCircleHole(false);
+        lineSet.setLineWidth(2.5f);
+        lineSet.setDrawValues(false);
+        lineSet.setMode(LineDataSet.Mode.LINEAR);
+        lineSet.setHighLightColor(maroon);
+
+        BarData barData = new BarData(barSet);
+        barData.setBarWidth(0.65f);
+
+        LineData lineData = new LineData(lineSet);
+
+        barChart.setData(barData);
+        lineChart.setData(lineData);
+
+        barChart.getDescription().setText(barBundle.title);
+        lineChart.getDescription().setText(lineBundle.title);
+
+        IndexAxisValueFormatter barFormatter = new IndexAxisValueFormatter(barBundle.labels);
+        IndexAxisValueFormatter lineFormatter = new IndexAxisValueFormatter(lineBundle.labels);
+
+        barChart.getXAxis().setValueFormatter(barFormatter);
+        barChart.getXAxis().setPosition(XAxis.XAxisPosition.BOTTOM);
+        barChart.getXAxis().setGranularity(1f);
+        barChart.getXAxis().setAxisMinimum(-0.5f);
+        barChart.getXAxis().setAxisMaximum(Math.max(0, barBundle.labels.size() - 0.5f));
+
+        lineChart.getXAxis().setValueFormatter(lineFormatter);
+        lineChart.getXAxis().setPosition(XAxis.XAxisPosition.BOTTOM);
+        lineChart.getXAxis().setGranularity(1f);
+        lineChart.getXAxis().setAxisMinimum(-0.5f);
+        lineChart.getXAxis().setAxisMaximum(Math.max(0, lineBundle.labels.size() - 0.5f));
+
+        YAxis barLeft = barChart.getAxisLeft();
+        barLeft.setAxisMinimum(0f);
+        barLeft.setGranularity(1f);
         barChart.getAxisRight().setEnabled(false);
-        XAxis xBar = barChart.getXAxis();
-        xBar.setGranularity(1f);
-        xBar.setGranularityEnabled(true);
-        xBar.setTextSize(14f);
 
-        YAxis leftAxisLine = lineChart.getAxisLeft();
-        leftAxisLine.setGranularity(1f);
-        leftAxisLine.setGranularityEnabled(true);
-        leftAxisLine.setAxisMinimum(0f);
-        leftAxisLine.setTextSize(14f);
+        YAxis lineLeft = lineChart.getAxisLeft();
+        lineLeft.setAxisMinimum(0f);
+        lineLeft.setGranularity(1f);
+        lineLeft.setLabelCount(5, true);
+        lineLeft.setValueFormatter(new ValueFormatter() {
+            @Override
+            public String getFormattedValue(float value) {
+                if (value == (long) value) {
+                    return String.format("%ds", (long) value);
+                }
+                return String.format("%.1fs", value);
+            }
+        });
         lineChart.getAxisRight().setEnabled(false);
-        XAxis xLine = lineChart.getXAxis();
-        xLine.setGranularity(1f);
-        xLine.setGranularityEnabled(true);
-        xLine.setTextSize(14f);
+
+        barChart.setFitBars(true);
+        barChart.invalidate();
+        lineChart.invalidate();
     }
 
-    /**
-     * Converts a month name to its corresponding integer.
-     */
+    private int safeParseInt(String value, int fallback) {
+        try {
+            return Integer.parseInt(value.replaceAll("[^0-9-]", "").trim());
+        } catch (Exception e) {
+            return fallback;
+        }
+    }
+
+    private int extractNumber(String value) {
+        return safeParseInt(value, 1);
+    }
+
     private int monthNameToInt(String name) {
         for (int i = 0; i < MONTH_NAMES.length; i++) {
             if (MONTH_NAMES[i].equalsIgnoreCase(name)) {
                 return i + 1;
             }
         }
-        return 1;
+        return LocalDate.now().getMonthValue();
+    }
+
+    private void setupChartProperties() {
+        barChart.getLegend().setEnabled(true);
+        lineChart.getLegend().setEnabled(true);
+
+        barChart.setNoDataText("No seizure records available");
+        lineChart.setNoDataText("No seizure records available");
+
+        barChart.setDrawGridBackground(false);
+        lineChart.setDrawGridBackground(false);
+
+        barChart.getAxisRight().setEnabled(false);
+        lineChart.getAxisRight().setEnabled(false);
+
+        YAxis barLeft = barChart.getAxisLeft();
+        barLeft.setGranularity(1f);
+        barLeft.setAxisMinimum(0f);
+
+        YAxis lineLeft = lineChart.getAxisLeft();
+        lineLeft.setGranularity(1f);
+        lineLeft.setAxisMinimum(0f);
     }
 }
