@@ -1,157 +1,198 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/scroll_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true"
-    android:background="@android:color/white">
+    android:background="@android:color/white"
+    android:overScrollMode="never">
 
     <LinearLayout
         android:id="@+id/main_container"
-        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="16dp">
+        android:orientation="vertical">
 
-        <!-- Page Title -->
-        <TextView
-            android:id="@+id/page_title"
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
+            android:background="@color/brand_green"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp">
+
+            <Button
+                android:id="@+id/back_button"
+                style="@style/ArticlesVideosBackButton"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
+                android:text="@string/back_arrow"
+                android:textColor="@color/brand_green"
+                android:background="@android:color/transparent" />
+
+            <TextView
+                android:id="@+id/page_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:text="@string/articles_videos_title"
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+        </RelativeLayout>
+
+        <HorizontalScrollView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/videos_articles"
-            android:textSize="22sp"
-            android:textStyle="bold"
-            android:textColor="@color/port_wine"
-            android:gravity="center"
-            android:paddingBottom="16dp"/>
+            android:background="@android:color/white"
+            android:fillViewport="true"
+            android:scrollbars="none">
 
-        <!-- Filter buttons (top) -->
-        <LinearLayout
-            android:id="@+id/top_filters"
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp"
+                android:paddingTop="14dp"
+                android:paddingBottom="10dp">
+
+                <Button
+                    android:id="@+id/button_all"
+                    style="@style/ArticlesVideosTabButton"
+                    android:text="@string/all"
+                    android:background="@android:color/transparent" />
+
+                <Button
+                    android:id="@+id/button_videos"
+                    style="@style/ArticlesVideosTabButton"
+                    android:text="@string/videos"
+                    android:background="@android:color/transparent" />
+
+                <Button
+                    android:id="@+id/button_website"
+                    style="@style/ArticlesVideosTabButton"
+                    android:text="@string/website"
+                    android:background="@android:color/transparent" />
+            </LinearLayout>
+        </HorizontalScrollView>
+
+        <EditText
+            android:id="@+id/searchBar"
+            style="@style/ArticlesVideosSearchInput"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center"
-            android:layout_marginBottom="18dp">
+            android:layout_height="48dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginTop="6dp"
+            android:layout_marginBottom="16dp"
+            android:background="@android:color/transparent"
+            android:drawableStart="@android:drawable/ic_menu_search"
+            android:drawablePadding="10dp"
+            android:hint="@string/search_articles_videos"
+            android:importantForAutofill="no"
+            android:inputType="text"
+            android:maxLines="1"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:textColor="@android:color/black"
+            android:textColorHint="#B6B6B6" />
 
-            <Button
-                android:id="@+id/button_articles"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/rounded_maroon"
-                android:text="@string/articles"
-                android:textColor="@color/golden_yellow"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                android:paddingLeft="18dp"
-                android:paddingRight="18dp"
-                android:layout_marginEnd="10dp"/>
-
-            <Button
-                android:id="@+id/button_videos"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/rounded_maroon"
-                android:text="@string/videos"
-                android:textColor="@color/golden_yellow"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                android:paddingLeft="18dp"
-                android:paddingRight="18dp"
-                android:layout_marginEnd="10dp"/>
-
-            <Button
-                android:id="@+id/button_all"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/rounded_maroon"
-                android:text="@string/all"
-                android:textColor="@color/golden_yellow"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                android:paddingLeft="18dp"
-                android:paddingRight="18dp"/>
-        </LinearLayout>
-
-        <!-- YOUTUBE Label (ID required by Java) -->
-        <TextView
-            android:id="@+id/youtube_label"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/youtube_label"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:textColor="@color/brand_green"
-            android:paddingBottom="8dp"/>
-
-        <!-- Placeholder for in-app YouTube player -->
-        <FrameLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/permanent_player_container"
             android:layout_width="match_parent"
-            android:layout_height="220dp"
-            android:background="#111111"
-            android:layout_marginBottom="10dp"/>
+            android:layout_height="190dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="8dp"
+            android:background="@drawable/featured_card_bg"
+            android:padding="18dp">
 
-        <!-- Fallback open in YouTube button -->
-        <Button
-            android:id="@+id/play_in_youtube_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/rounded_green_pill"
-            android:text="@string/play_in_youtube"
-            android:textColor="@android:color/white"
-            android:textSize="15sp"
-            android:textStyle="bold"
-            android:paddingLeft="20dp"
-            android:paddingRight="20dp"
-            android:layout_marginBottom="18dp"/>
+            <ImageView
+                android:id="@+id/featured_play_icon"
+                android:layout_width="72dp"
+                android:layout_height="72dp"
+                android:contentDescription="@string/open_video"
+                android:src="@android:drawable/ic_media_play"
+                app:tint="@color/white"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toTopOf="@+id/featured_video_title"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
 
-        <!-- LATEST VIDEOS Section -->
+            <TextView
+                android:id="@+id/featured_video_title"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@string/featured_video_title"
+                android:textColor="@color/white"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:gravity="center"
+                android:letterSpacing="0.02"
+                android:maxLines="2"
+                android:ellipsize="end"
+                app:layout_constraintTop_toBottomOf="@id/featured_play_icon"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
+
+            <TextView
+                android:id="@+id/featured_video_recommended_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:text="@string/recommended_by_swf"
+                android:textColor="@color/golden_yellow"
+                android:textSize="13sp"
+                android:textStyle="bold"
+                app:layout_constraintTop_toBottomOf="@id/featured_video_title"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
         <TextView
             android:id="@+id/latest_label"
+            style="@style/ArticlesVideosSectionTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Latest Videos"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:textColor="@color/brand_green"
-            android:paddingBottom="8dp"/>
+            android:layout_marginStart="28dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="10dp"
+            android:text="@string/latest_videos" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/latest_videos_recycler"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="18dp"/>
+            android:nestedScrollingEnabled="false"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:layout_marginBottom="6dp" />
 
-        <!-- ARTICLES Label (ID required by Java) -->
         <TextView
             android:id="@+id/articles_label"
+            style="@style/ArticlesVideosSectionTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/articles"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:textColor="@color/brand_green"
-            android:paddingTop="8dp"
-            android:paddingBottom="8dp"/>
+            android:layout_marginStart="28dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="10dp"
+            android:text="@string/website" />
 
-        <!-- articles recycler -->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/articles_recycler"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
-
-        <!-- Back Button -->
-        <Button
-            android:id="@+id/back_button"
-            android:layout_width="150dp"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="24dp"
-            android:background="@drawable/rounded_green_pill"
-            android:text="@string/back_articles"
-            android:textColor="@android:color/white"
-            android:textStyle="bold"
-            android:textSize="16sp"/>
+            android:nestedScrollingEnabled="false"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:paddingBottom="24dp" />
+
     </LinearLayout>
-</ScrollView>
+</androidx.core.widget.NestedScrollView>

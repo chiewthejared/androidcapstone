@@ -16,56 +16,69 @@ import com.example.test_v2.R;
 
 import java.util.List;
 
-public class LatestVideoAdapter extends RecyclerView.Adapter<LatestVideoAdapter.Holder> {
+public class LatestVideoAdapter extends RecyclerView.Adapter<LatestVideoAdapter.VideoViewHolder> {
 
     public static class VideoInfo {
-        public final String videoId;
-        public final String title;
-        public VideoInfo(String id, String title) { this.videoId = id; this.title = title; }
+        public String videoId;
+        public String title;
+
+        public VideoInfo(String videoId, String title) {
+            this.videoId = videoId;
+            this.title = title;
+        }
     }
 
-    private final List<VideoInfo> items;
-    private final Context ctx;
+    private final List<VideoInfo> videoList;
+    private final Context context;
 
-    public LatestVideoAdapter(Context ctx, List<VideoInfo> items) {
-        this.ctx = ctx;
-        this.items = items;
+    public LatestVideoAdapter(Context context, List<VideoInfo> videoList) {
+        this.context = context;
+        this.videoList = videoList;
     }
 
     @NonNull
     @Override
-    public Holder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_latest_video, parent, false);
-        return new Holder(v);
+    public VideoViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(context).inflate(R.layout.item_latest_video, parent, false);
+        return new VideoViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull Holder holder, int position) {
-        if (items == null || position < 0 || position >= items.size()) return;
-        VideoInfo info = items.get(position);
-        holder.title.setText(info.title == null ? "" : info.title);
-        holder.openBtn.setOnClickListener(v -> {
-            Intent appIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("vnd.youtube:" + info.videoId));
-            try {
-                ctx.startActivity(appIntent);
-            } catch (Exception e) {
-                ctx.startActivity(new Intent(Intent.ACTION_VIEW,
-                        Uri.parse("https://www.youtube.com/watch?v=" + info.videoId)));
-            }
-        });
+    public void onBindViewHolder(@NonNull VideoViewHolder holder, int position) {
+        VideoInfo video = videoList.get(position);
+
+        holder.title.setText(video.title);
+
+        // 🔥 ADD DESCRIPTION (simple auto description)
+        holder.description.setText("Watch this video about " + video.title.toLowerCase());
+
+        holder.button.setOnClickListener(v -> openYoutube(video.videoId));
     }
 
     @Override
-    public int getItemCount() { return (items == null) ? 0 : items.size(); }
+    public int getItemCount() {
+        return videoList.size();
+    }
 
-    public static class Holder extends RecyclerView.ViewHolder {
-        TextView title;
-        Button openBtn;
+    static class VideoViewHolder extends RecyclerView.ViewHolder {
+        TextView title, description;
+        Button button;
 
-        public Holder(@NonNull View itemView) {
+        public VideoViewHolder(@NonNull View itemView) {
             super(itemView);
             title = itemView.findViewById(R.id.latest_video_title);
-            openBtn = itemView.findViewById(R.id.latest_video_button);
+            description = itemView.findViewById(R.id.latest_video_description);
+            button = itemView.findViewById(R.id.latest_video_button);
+        }
+    }
+
+    private void openYoutube(String videoId) {
+        Intent appIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("vnd.youtube:" + videoId));
+        try {
+            context.startActivity(appIntent);
+        } catch (Exception e) {
+            context.startActivity(new Intent(Intent.ACTION_VIEW,
+                    Uri.parse("https://www.youtube.com/watch?v=" + videoId)));
         }
     }
 }

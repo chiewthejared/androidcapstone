@@ -1,33 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <!-- Base application theme -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
-        <item name="colorPrimary">#8B0000</item> <!-- Red color -->
-        <item name="colorPrimaryDark">#FFD700</item> <!-- Gold color -->
-        <item name="colorAccent">#008000</item> <!-- Green color -->
+        <item name="colorPrimary">#8B0000</item>
+        <item name="colorPrimaryDark">#FFD700</item>
+        <item name="colorAccent">#008000</item>
     </style>
-    //
 
-    <!-- Style for Number Pad Buttons -->
-    <!-- styles.xml (replace NumberPadButton) -->
     <style name="NumberPadButton">
-        <!-- background stays the same -->
         <item name="android:background">@drawable/keypad_button_bg</item>
-
-        <!-- use the new color selector so text is white normally, golden on press -->
         <item name="android:textColor">@color/number_text_color</item>
-
         <item name="android:textSize">22sp</item>
         <item name="android:textStyle">bold</item>
-
-        <!-- center the digits -->
         <item name="android:gravity">center</item>
-
-        <!-- add spacing between buttons so they do not stick together -->
         <item name="android:layout_margin">12dp</item>
-
-        <!-- ensure buttons don't inherit unwanted padding from parent -->
         <item name="android:padding">0dp</item>
     </style>
 
@@ -44,21 +30,65 @@
     <style name="WrappedDialog" parent="Theme.Material3.DayNight.Dialog">
         <item name="android:windowNoTitle">true</item>
         <item name="android:background">@android:color/transparent</item>
-        <!-- These two expect fractions like "90%" or @fraction -->
         <item name="android:windowMinWidthMajor">90%</item>
         <item name="android:windowMinWidthMinor">90%</item>
     </style>
 
+    <style name="MonthlyWeekday">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">#6B7280</item>
+    </style>
 
-        <style name="MonthlyWeekday">
-            <item name="android:layout_width">0dp</item>
-            <item name="android:layout_height">wrap_content</item>
-            <item name="android:layout_weight">1</item>
-            <item name="android:gravity">center</item>
-            <item name="android:textSize">12sp</item>
-            <item name="android:textStyle">bold</item>
-            <item name="android:textColor">#6B7280</item>
-        </style>
+    <style name="ArticlesVideosTabButton">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">42dp</item>
+        <item name="android:layout_marginEnd">12dp</item>
+        <item name="android:minWidth">74dp</item>
+        <item name="android:paddingStart">18dp</item>
+        <item name="android:paddingEnd">18dp</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textAllCaps">false</item>
+    </style>
 
+    <style name="ArticlesVideosBackButton">
+        <item name="android:layout_width">44dp</item>
+        <item name="android:layout_height">44dp</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textSize">22sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textAllCaps">false</item>
+    </style>
+
+    <style name="ArticlesVideosSearchInput">
+        <item name="android:textSize">15sp</item>
+        <item name="android:textColor">#222222</item>
+        <item name="android:textColorHint">#A8A8A8</item>
+        <item name="android:paddingStart">16dp</item>
+        <item name="android:paddingEnd">16dp</item>
+        <item name="android:gravity">center_vertical</item>
+    </style>
+
+    <style name="ArticlesVideosSectionTitle">
+        <item name="android:textSize">22sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/port_wine</item>
+    </style>
+
+    <style name="ArticlesVideosPlayButton">
+        <item name="android:background">@drawable/play_button_bg</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:paddingStart">16dp</item>
+        <item name="android:paddingEnd">16dp</item>
+        <item name="android:minHeight">40dp</item>
+    </style>
 
 </resources>

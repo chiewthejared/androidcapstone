@@ -12,11 +12,21 @@
         android:id="@+id/latest_video_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Video Title"
         android:textColor="@color/brand_green"
         android:textSize="16sp"
         android:textStyle="bold"
-        android:paddingBottom="8dp" />
+        android:paddingBottom="4dp" />
+
+    <!-- NEW: Description -->
+    <TextView
+        android:id="@+id/latest_video_description"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="#666666"
+        android:textSize="14sp"
+        android:paddingBottom="10dp"
+        android:maxLines="2"
+        android:ellipsize="end" />
 
     <!-- Open Button -->
     <Button

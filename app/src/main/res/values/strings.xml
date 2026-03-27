@@ -30,6 +30,18 @@
     <string name="open_video">OPEN VIDEO</string>
     <string name="back_articles">Back</string>
     <string name="open_link">Open Link</string>
+    <string name="articles_videos_title">Articles &amp; Videos</string>
+    <string name="website">Website</string>
+    <string name="search_articles_videos">Search articles &amp; videos...</string>
+    <string name="featured_video">FEATURED VIDEO</string>
+    <string name="recommended_by_swf">★ Recommended by SWF</string>
+    <string name="latest_videos">Latest Videos</string>
+    <string name="back_arrow">←</string>
+    <string name="swf_website_title">Sturge-Weber Foundation Website</string>
+    <string name="swf_website_description">Visit the official Sturge-Weber Foundation website.</string>
+    <string name="emergency_room_guide_title">Emergency Room Guide</string>
+    <string name="emergency_room_guide_description">Download the Sturge-Weber Emergency Room Guide.</string>
+    <string name="featured_video_title">Featured Video Title</string>
 
     <!-- Mission -->
     <string name="our_mission">Our Mission</string>

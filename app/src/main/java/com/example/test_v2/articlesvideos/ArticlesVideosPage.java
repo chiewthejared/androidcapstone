@@ -1,24 +1,29 @@
 package com.example.test_v2.articlesvideos;
 
 import android.content.Intent;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Rect;
+import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Xml;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.FrameLayout;
+import android.widget.EditText;
+import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.test_v2.R;
-import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer;
-import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener;
-import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView;
 
 import org.xmlpull.v1.XmlPullParser;
 
@@ -26,108 +31,320 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class ArticlesVideosPage extends AppCompatActivity {
 
     private static final String CHANNEL_ID = "UCcHhzB1sqo56Cc6oUp2FoGQ";
     private static final String PERMANENT_VIDEO_ID = "EVyoQkqcuWM";
 
+    private static final String TAB_ALL = "all";
+    private static final String TAB_VIDEOS = "videos";
+    private static final String TAB_WEBSITE = "website";
+
     private RecyclerView latestRecycler;
     private LatestVideoAdapter latestAdapter;
-    private List<LatestVideoAdapter.VideoInfo> latestList = new ArrayList<>();
 
     private RecyclerView articlesRecycler;
     private ArticlesVideosAdapter articlesAdapter;
-    private List<ArticleVideoItem> articleList = new ArrayList<>();
 
-    private FrameLayout playerContainer;
-    private View youtubeLabel;
-    private Button playInYoutube;
-    private Button btnArticles, btnVideos, btnAll;
+    private final List<LatestVideoAdapter.VideoInfo> allLatestList = new ArrayList<>();
+    private final List<LatestVideoAdapter.VideoInfo> latestVisibleList = new ArrayList<>();
+
+    private final List<ArticleVideoItem> allArticleList = new ArrayList<>();
+    private final List<ArticleVideoItem> articleVisibleList = new ArrayList<>();
+
+    private ConstraintLayout featuredVideoCard;
+    private TextView featuredVideoTitle;
+    private TextView featuredRecommendedLabel;
+    private Button btnVideos;
+    private Button btnAll;
+    private Button btnWebsite;
     private Button backButton;
+    private TextView latestLabel;
+    private TextView articlesLabel;
+    private EditText searchBar;
+
+    private String currentTab = TAB_ALL;
+    private String currentQuery = "";
+
+    private final ExecutorService executorService = Executors.newSingleThreadExecutor();
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.articles_videos_page);
 
-        // --- YouTube player setup ---
-        playerContainer = findViewById(R.id.permanent_player_container);
-        YouTubePlayerView youTubePlayerView = new YouTubePlayerView(this);
-        playerContainer.addView(youTubePlayerView, new FrameLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-        getLifecycle().addObserver(youTubePlayerView);
+        bindViews();
+        setupRecyclerViews();
+        setupStaticContent();
+        setupListeners();
+        setupChrome();
+        refreshUi();
 
-        youTubePlayerView.addYouTubePlayerListener(new AbstractYouTubePlayerListener() {
-            @Override
-            public void onReady(YouTubePlayer youTubePlayer) {
-                // Attempt to load the permanent video (some videos block embedding)
-                youTubePlayer.loadVideo(PERMANENT_VIDEO_ID, 0f);
-            }
-        });
+        fetchLatestVideos();
+    }
 
-        youtubeLabel = findViewById(R.id.youtube_label);
-        playInYoutube = findViewById(R.id.play_in_youtube_button);
-        playInYoutube.setOnClickListener(v -> openYoutubeVideo(PERMANENT_VIDEO_ID));
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        executorService.shutdownNow();
+    }
 
-        // --- Latest videos RecyclerView ---
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
+    }
+
+    private void bindViews() {
+        backButton = findViewById(R.id.back_button);
+
+        btnAll = findViewById(R.id.button_all);
+        btnVideos = findViewById(R.id.button_videos);
+        btnWebsite = findViewById(R.id.button_website);
+
+        searchBar = findViewById(R.id.searchBar);
+
+        featuredVideoTitle = findViewById(R.id.featured_video_title);
+        featuredRecommendedLabel = findViewById(R.id.featured_video_recommended_label);
+        featuredVideoCard = findViewById(R.id.permanent_player_container);
+
+        latestLabel = findViewById(R.id.latest_label);
         latestRecycler = findViewById(R.id.latest_videos_recycler);
-        latestRecycler.setLayoutManager(new LinearLayoutManager(this));
-        latestAdapter = new LatestVideoAdapter(this, latestList);
-        latestRecycler.setAdapter(latestAdapter);
 
-        // fetch latest videos
-        new FetchLatestVideosTask().execute(CHANNEL_ID);
-
-        // --- Articles RecyclerView + adapter ---
+        articlesLabel = findViewById(R.id.articles_label);
         articlesRecycler = findViewById(R.id.articles_recycler);
-        articlesRecycler.setLayoutManager(new LinearLayoutManager(this));
+    }
 
-        // Add your two article links
-        articleList.clear();
-        articleList.add(new ArticleVideoItem(
-                "Sturge-Weber Foundation Website",
-                "Visit the official Sturge-Weber Foundation website.",
+    private void setupRecyclerViews() {
+        latestAdapter = new LatestVideoAdapter(this, latestVisibleList);
+        latestRecycler.setLayoutManager(new LinearLayoutManager(this));
+        latestRecycler.setNestedScrollingEnabled(false);
+        latestRecycler.setAdapter(latestAdapter);
+        latestRecycler.addItemDecoration(new LineDividerDecoration(dp(1), Color.parseColor("#1F000000")));
+
+        articlesAdapter = new ArticlesVideosAdapter(articleVisibleList, this);
+        articlesRecycler.setLayoutManager(new LinearLayoutManager(this));
+        articlesRecycler.setNestedScrollingEnabled(false);
+        articlesRecycler.setAdapter(articlesAdapter);
+        articlesRecycler.addItemDecoration(new LineDividerDecoration(dp(1), Color.parseColor("#1F000000")));
+    }
+
+    private void setupStaticContent() {
+        allArticleList.clear();
+
+        allArticleList.add(new ArticleVideoItem(
+                getString(R.string.swf_website_title),
+                getString(R.string.swf_website_description),
                 "http://sturge-weber.org/",
                 "article"
         ));
-        articleList.add(new ArticleVideoItem(
-                "Emergency Room Guide",
-                "Download the Sturge-Weber Emergency Room Guide.",
+
+        allArticleList.add(new ArticleVideoItem(
+                getString(R.string.emergency_room_guide_title),
+                getString(R.string.emergency_room_guide_description),
                 "https://sturge-weber.org/file_download/inline/d86f6b6f-fa6d-49f2-a405-484b38fdb2d3",
                 "article"
         ));
+    }
 
-        articlesAdapter = new ArticlesVideosAdapter(articleList, this);
-        articlesRecycler.setAdapter(articlesAdapter);
+    private void setupListeners() {
+        backButton.setOnClickListener(v -> onBackPressed());
 
-        // --- Back button ---
-        backButton = findViewById(R.id.back_button);
-        backButton.setOnClickListener(v -> finish());
-
-        // --- Top filter buttons wiring ---
-        btnArticles = findViewById(R.id.button_articles);
-        btnVideos = findViewById(R.id.button_videos);
-        btnAll = findViewById(R.id.button_all);
-
-        btnArticles.setOnClickListener(v -> {
-            showArticles();
-            updateTopButtonState("articles");
+        btnAll.setOnClickListener(v -> {
+            currentTab = TAB_ALL;
+            refreshUi();
         });
 
         btnVideos.setOnClickListener(v -> {
-            showVideos();
-            updateTopButtonState("videos");
+            currentTab = TAB_VIDEOS;
+            refreshUi();
         });
 
-        btnAll.setOnClickListener(v -> {
-            showAll();
-            updateTopButtonState("all");
+        btnWebsite.setOnClickListener(v -> {
+            currentTab = TAB_WEBSITE;
+            refreshUi();
         });
 
-        // default: show all
-        showAll();
-        updateTopButtonState("all");
+        featuredVideoCard.setOnClickListener(v -> openYoutubeVideo(PERMANENT_VIDEO_ID));
+
+        searchBar.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                currentQuery = s == null ? "" : s.toString();
+                refreshUi();
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
+        });
+    }
+
+    private void setupChrome() {
+        backButton.setAllCaps(false);
+        backButton.setText(getString(R.string.back_arrow));
+        backButton.setTextSize(22f);
+        backButton.setTextColor(ContextCompat.getColor(this, R.color.brand_green));
+        backButton.setBackground(makeRoundedDrawable(
+                Color.parseColor("#CFE3DF"),
+                Color.TRANSPARENT,
+                dp(22),
+                0
+        ));
+
+        styleTabButton(btnAll, true, false);
+        styleTabButton(btnVideos, false, true);
+        styleTabButton(btnWebsite, false, true);
+
+        searchBar.setBackground(makeRoundedDrawable(
+                Color.parseColor("#F3F4F6"),
+                Color.TRANSPARENT,
+                dp(24),
+                0
+        ));
+        searchBar.setPadding(dp(16), dp(12), dp(16), dp(12));
+
+        featuredVideoCard.setBackground(makeFeaturedDrawable());
+        featuredVideoCard.setClickable(true);
+        featuredVideoCard.setFocusable(true);
+
+        featuredVideoTitle.setText(getString(R.string.featured_video_title));
+        featuredVideoTitle.setTextColor(Color.WHITE);
+
+        featuredRecommendedLabel.setText(getString(R.string.recommended_by_swf));
+        featuredRecommendedLabel.setTextColor(ContextCompat.getColor(this, R.color.golden_yellow));
+        featuredRecommendedLabel.setTextSize(13f);
+
+        latestLabel.setText(getString(R.string.latest_videos));
+        latestLabel.setTextColor(ContextCompat.getColor(this, R.color.brand_green));
+
+        articlesLabel.setText(getString(R.string.website));
+        articlesLabel.setTextColor(ContextCompat.getColor(this, R.color.golden_yellow));
+
+        latestRecycler.setOverScrollMode(View.OVER_SCROLL_NEVER);
+        articlesRecycler.setOverScrollMode(View.OVER_SCROLL_NEVER);
+    }
+
+    private void refreshUi() {
+        applyFilters();
+        updateTabAppearance();
+        updateSectionVisibility();
+    }
+
+    private void applyFilters() {
+        String query = currentQuery == null ? "" : currentQuery.trim().toLowerCase(Locale.US);
+
+        articleVisibleList.clear();
+        for (ArticleVideoItem item : allArticleList) {
+            if (matches(item, query)) {
+                articleVisibleList.add(item);
+            }
+        }
+
+        latestVisibleList.clear();
+        for (LatestVideoAdapter.VideoInfo info : allLatestList) {
+            if (matches(info, query)) {
+                latestVisibleList.add(info);
+            }
+        }
+
+        articlesAdapter.notifyDataSetChanged();
+        latestAdapter.notifyDataSetChanged();
+    }
+
+    private boolean matches(ArticleVideoItem item, String query) {
+        if (query.isEmpty()) return true;
+
+        return contains(item.getTitle(), query)
+                || contains(item.getDescription(), query)
+                || contains(item.getLink(), query)
+                || contains(item.getType(), query);
+    }
+
+    private boolean matches(LatestVideoAdapter.VideoInfo info, String query) {
+        if (query.isEmpty()) return true;
+        return contains(info.title, query);
+    }
+
+    private boolean contains(String value, String query) {
+        if (value == null) return false;
+        return value.toLowerCase(Locale.US).contains(query);
+    }
+
+    private void updateSectionVisibility() {
+        boolean showVideos = TAB_ALL.equals(currentTab) || TAB_VIDEOS.equals(currentTab);
+        boolean showWebsite = TAB_ALL.equals(currentTab) || TAB_WEBSITE.equals(currentTab);
+
+        featuredVideoCard.setVisibility(showVideos ? View.VISIBLE : View.GONE);
+        latestLabel.setVisibility(showVideos ? View.VISIBLE : View.GONE);
+        latestRecycler.setVisibility(showVideos ? View.VISIBLE : View.GONE);
+
+        articlesLabel.setVisibility(showWebsite ? View.VISIBLE : View.GONE);
+        articlesRecycler.setVisibility(showWebsite ? View.VISIBLE : View.GONE);
+
+        if (showWebsite) {
+            articlesLabel.setText(getString(R.string.website));
+        }
+    }
+
+    private void updateTabAppearance() {
+        styleTabButton(btnAll, TAB_ALL.equals(currentTab), false);
+        styleTabButton(btnVideos, TAB_VIDEOS.equals(currentTab), true);
+        styleTabButton(btnWebsite, TAB_WEBSITE.equals(currentTab), true);
+    }
+
+    private void styleTabButton(Button button, boolean selected, boolean yellowUnselectedText) {
+        int fillColor = selected ? ContextCompat.getColor(this, R.color.port_wine) : Color.WHITE;
+        int strokeColor = ContextCompat.getColor(this, R.color.port_wine);
+        int textColor;
+
+        if (selected) {
+            textColor = Color.WHITE;
+        } else if (yellowUnselectedText) {
+            textColor = ContextCompat.getColor(this, R.color.golden_yellow);
+        } else {
+            textColor = Color.WHITE;
+        }
+
+        button.setBackground(makeRoundedDrawable(fillColor, strokeColor, dp(24), dp(1)));
+        button.setTextColor(textColor);
+        button.setAllCaps(false);
+    }
+
+    private GradientDrawable makeRoundedDrawable(int fillColor, int strokeColor, int radiusPx, int strokeWidthPx) {
+        GradientDrawable drawable = new GradientDrawable();
+        drawable.setColor(fillColor);
+        drawable.setCornerRadius(radiusPx);
+        if (strokeWidthPx > 0) {
+            drawable.setStroke(strokeWidthPx, strokeColor);
+        }
+        return drawable;
+    }
+
+    private GradientDrawable makeFeaturedDrawable() {
+        GradientDrawable drawable = new GradientDrawable(
+                GradientDrawable.Orientation.LEFT_RIGHT,
+                new int[] {
+                        ContextCompat.getColor(this, R.color.port_wine),
+                        Color.parseColor("#5F4550"),
+                        ContextCompat.getColor(this, R.color.brand_green)
+                }
+        );
+        drawable.setCornerRadius(dp(20));
+        return drawable;
+    }
+
+    private int dp(int value) {
+        float density = getResources().getDisplayMetrics().density;
+        return Math.round(value * density);
     }
 
     private void openYoutubeVideo(String videoId) {
@@ -140,59 +357,11 @@ public class ArticlesVideosPage extends AppCompatActivity {
         }
     }
 
-    // Show/hide helpers for filter buttons
-    private void showVideos() {
-        // show YouTube + latest
-        if (youtubeLabel != null) youtubeLabel.setVisibility(View.VISIBLE);
-        if (playerContainer != null) playerContainer.setVisibility(View.VISIBLE);
-        if (playInYoutube != null) playInYoutube.setVisibility(View.VISIBLE);
-        if (latestRecycler != null) latestRecycler.setVisibility(View.VISIBLE);
+    private void fetchLatestVideos() {
+        executorService.execute(() -> {
+            List<LatestVideoAdapter.VideoInfo> result = new ArrayList<>();
+            String feedUrl = "https://www.youtube.com/feeds/videos.xml?channel_id=" + CHANNEL_ID;
 
-        // hide articles
-        if (articlesRecycler != null) articlesRecycler.setVisibility(View.GONE);
-        View artLabel = findViewById(R.id.articles_label);
-        if (artLabel != null) artLabel.setVisibility(View.GONE);
-    }
-
-    private void showArticles() {
-        // hide YouTube + latest
-        if (youtubeLabel != null) youtubeLabel.setVisibility(View.GONE);
-        if (playerContainer != null) playerContainer.setVisibility(View.GONE);
-        if (playInYoutube != null) playInYoutube.setVisibility(View.GONE);
-        if (latestRecycler != null) latestRecycler.setVisibility(View.GONE);
-
-        // show articles
-        if (articlesRecycler != null) articlesRecycler.setVisibility(View.VISIBLE);
-        View artLabel = findViewById(R.id.articles_label);
-        if (artLabel != null) artLabel.setVisibility(View.VISIBLE);
-    }
-
-    private void showAll() {
-        if (youtubeLabel != null) youtubeLabel.setVisibility(View.VISIBLE);
-        if (playerContainer != null) playerContainer.setVisibility(View.VISIBLE);
-        if (playInYoutube != null) playInYoutube.setVisibility(View.VISIBLE);
-        if (latestRecycler != null) latestRecycler.setVisibility(View.VISIBLE);
-
-        if (articlesRecycler != null) articlesRecycler.setVisibility(View.VISIBLE);
-        View artLabel = findViewById(R.id.articles_label);
-        if (artLabel != null) artLabel.setVisibility(View.VISIBLE);
-    }
-
-    private void updateTopButtonState(String selected) {
-        float on = 1.0f;
-        float off = 0.85f;
-        if (btnArticles != null) btnArticles.setAlpha("articles".equals(selected) ? on : off);
-        if (btnVideos != null) btnVideos.setAlpha("videos".equals(selected) ? on : off);
-        if (btnAll != null) btnAll.setAlpha("all".equals(selected) ? on : off);
-    }
-
-    // AsyncTask to fetch channel feed and parse latest 3 entries
-    private class FetchLatestVideosTask extends AsyncTask<String, Void, List<LatestVideoAdapter.VideoInfo>> {
-        @Override
-        protected List<LatestVideoAdapter.VideoInfo> doInBackground(String... strings) {
-            String channelId = strings[0];
-            String feedUrl = "https://www.youtube.com/feeds/videos.xml?channel_id=" + channelId;
-            List<LatestVideoAdapter.VideoInfo> out = new ArrayList<>();
             try (InputStream in = new URL(feedUrl).openStream()) {
                 XmlPullParser parser = Xml.newPullParser();
                 parser.setInput(in, null);
@@ -202,8 +371,9 @@ public class ArticlesVideosPage extends AppCompatActivity {
                 String currentVideoId = null;
                 String currentTitle = null;
 
-                while (eventType != XmlPullParser.END_DOCUMENT && out.size() < 3) {
+                while (eventType != XmlPullParser.END_DOCUMENT && result.size() < 3) {
                     String tagName = parser.getName();
+
                     if (eventType == XmlPullParser.TEXT) {
                         text = parser.getText();
                     } else if (eventType == XmlPullParser.END_TAG) {
@@ -213,26 +383,63 @@ public class ArticlesVideosPage extends AppCompatActivity {
                             currentTitle = text != null ? text.trim() : null;
                         } else if ("entry".equals(tagName)) {
                             if (currentVideoId != null && currentTitle != null && !currentVideoId.isEmpty()) {
-                                out.add(new LatestVideoAdapter.VideoInfo(currentVideoId, currentTitle));
+                                result.add(new LatestVideoAdapter.VideoInfo(currentVideoId, currentTitle));
                             }
                             currentVideoId = null;
                             currentTitle = null;
                         }
                     }
+
                     eventType = parser.next();
                 }
-            } catch (Exception e) {
-                // optional: log
+            } catch (Exception ignored) {
             }
-            return out;
+
+            runOnUiThread(() -> {
+                if (!result.isEmpty()) {
+                    allLatestList.clear();
+                    allLatestList.addAll(result);
+
+                    if (!result.isEmpty()) {
+                        featuredVideoTitle.setText(result.get(0).title);
+                    }
+
+                    refreshUi();
+                }
+            });
+        });
+    }
+
+    private static class LineDividerDecoration extends RecyclerView.ItemDecoration {
+        private final int heightPx;
+        private final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+
+        LineDividerDecoration(int heightPx, int color) {
+            this.heightPx = heightPx;
+            paint.setColor(color);
         }
 
         @Override
-        protected void onPostExecute(List<LatestVideoAdapter.VideoInfo> videoInfos) {
-            if (videoInfos != null && !videoInfos.isEmpty()) {
-                latestList.clear();
-                latestList.addAll(videoInfos);
-                if (latestAdapter != null) latestAdapter.notifyDataSetChanged();
+        public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
+            int position = parent.getChildAdapterPosition(view);
+            if (position != RecyclerView.NO_POSITION && position < state.getItemCount() - 1) {
+                outRect.bottom = heightPx;
+            }
+        }
+
+        @Override
+        public void onDrawOver(Canvas c, RecyclerView parent, RecyclerView.State state) {
+            int left = parent.getPaddingLeft();
+            int right = parent.getWidth() - parent.getPaddingRight();
+
+            for (int i = 0; i < parent.getChildCount() - 1; i++) {
+                View child = parent.getChildAt(i);
+                RecyclerView.LayoutParams params = (RecyclerView.LayoutParams) child.getLayoutParams();
+
+                int top = child.getBottom() + params.bottomMargin;
+                int bottom = top + heightPx;
+
+                c.drawRect(left, top, right, bottom, paint);
             }
         }
     }
