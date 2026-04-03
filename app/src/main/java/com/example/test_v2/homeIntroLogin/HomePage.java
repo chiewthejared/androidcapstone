@@ -212,10 +212,10 @@ public class HomePage extends AppCompatActivity {
                 break;
             case "Doctor Info":
                 candidates = new String[] {
-                        "com.example.test_v2.doctorinfo.DoctorInfoPage",
-                        "com.example.test_v2.doctorinfo.DoctorInfoActivity",
+                        "com.example.test_v2.doctorInfo.DoctorInfoPage",
+                        "com.example.test_v2.doctorInfo.DoctorInfoActivity",
                         "com.example.test_v2.doctor.DoctorInfoPage",
-                        "com.example.test_v2.doctorinfo.DoctorInfo"
+                        "com.example.test_v2.doctorInfo.DoctorInfo"
                 };
                 break;
             case "Analytics":

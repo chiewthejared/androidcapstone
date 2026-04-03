@@ -12,6 +12,7 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.test_v2.R;
+import com.example.test_v2.doctorInfo.DoctorInfoPage;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -21,9 +22,8 @@ import java.util.Locale;
 public class EventDetailsActivity extends AppCompatActivity {
     private static final int EDIT_EVENT_REQUEST_CODE = 100;
     private TextView titleTextView, tagTextView, timeTextView, descriptionTextView;
-    private Button editEventButton, deleteEventButton;
+    private Button editEventButton, deleteEventButton, viewDoctorButton;
     private EventViewModel eventViewModel;
-    // Holds the current event ID being observed.
     private String currentEventId;
     private TextView eventDate;
 
@@ -38,9 +38,9 @@ public class EventDetailsActivity extends AppCompatActivity {
         descriptionTextView = findViewById(R.id.eventDetailDescription);
         editEventButton = findViewById(R.id.editEventButton);
         deleteEventButton = findViewById(R.id.deleteEventButton);
+        viewDoctorButton = findViewById(R.id.viewDoctorButton);
         eventDate = findViewById(R.id.eventDetailDate);
         Button backButton = findViewById(R.id.backButton);
-
 
         eventViewModel = new ViewModelProvider(this).get(EventViewModel.class);
         String eventIdString = getIntent().getStringExtra("eventId");
@@ -49,13 +49,10 @@ public class EventDetailsActivity extends AppCompatActivity {
             finish();
             return;
         }
-        // Set the current event ID.
         currentEventId = eventIdString;
-
-        // Observe the event details.
         observeEvent(currentEventId);
 
-        backButton.setOnClickListener(v -> finish()); // Closes the activity and returns to the previous screen
+        backButton.setOnClickListener(v -> finish());
 
         editEventButton.setOnClickListener(v -> {
             Intent intent = new Intent(EventDetailsActivity.this, EditEventActivity.class);
@@ -67,7 +64,6 @@ public class EventDetailsActivity extends AppCompatActivity {
             eventViewModel.getEventById(currentEventId).observe(this, event -> {
                 if (event != null) {
                     if ("No Repeat".equals(event.getRepeatInterval())) {
-                        // If the event does NOT repeat, just ask for a simple delete confirmation
                         new android.app.AlertDialog.Builder(EventDetailsActivity.this)
                                 .setTitle("Delete Event")
                                 .setMessage("Are you sure you want to delete this event?")
@@ -75,7 +71,6 @@ public class EventDetailsActivity extends AppCompatActivity {
                                 .setNegativeButton("No", null)
                                 .show();
                     } else {
-                        // If the event is part of a repeating series, ask about deleting all occurrences
                         new android.app.AlertDialog.Builder(EventDetailsActivity.this)
                                 .setTitle("Delete Event")
                                 .setMessage("Do you want to delete only this event or all repeating events?")
@@ -87,11 +82,8 @@ public class EventDetailsActivity extends AppCompatActivity {
                 }
             });
         });
-
-
     }
 
-    // Helper method to observe an event by its ID.
     private void observeEvent(String eventId) {
         eventViewModel.getEventById(eventId).observe(this, new Observer<HelperEvent>() {
             @Override
@@ -100,11 +92,32 @@ public class EventDetailsActivity extends AppCompatActivity {
                     titleTextView.setText(event.getTitle());
                     timeTextView.setText(event.getStartTime() + " - " + event.getEndTime());
                     tagTextView.setText(event.getTag());
-                    descriptionTextView.setText(event.getDescription());
-                    String formattedDate = formatDate(event.getDate());
-                    eventDate.setText(formattedDate);
+                    eventDate.setText(formatDate(event.getDate()));
 
-// 👇 Hide buttons if linkedId matches
+                    // 解析 description，提取 doctorId
+                    String desc = event.getDescription();
+                    String extractedDoctorId = null;
+                    if (desc != null && desc.startsWith("DOCTORID:")) {
+                        String[] parts = desc.split("\n", 2);
+                        extractedDoctorId = parts[0].replace("DOCTORID:", "").trim();
+                        desc = parts.length > 1 ? parts[1].trim() : "";
+                    }
+                    descriptionTextView.setText(desc);
+
+                    // View Doctor 按钮
+                    if ("DoctorAppointment".equals(event.getTag()) && extractedDoctorId != null) {
+                        final int docId = Integer.parseInt(extractedDoctorId);
+                        viewDoctorButton.setVisibility(View.VISIBLE);
+                        viewDoctorButton.setOnClickListener(v -> {
+                            Intent intent = new Intent(EventDetailsActivity.this, DoctorInfoPage.class);
+                            intent.putExtra("highlightDoctorId", docId);
+                            startActivity(intent);
+                        });
+                    } else {
+                        viewDoctorButton.setVisibility(View.GONE);
+                    }
+
+                    // 隐藏 edit/delete
                     if ("DONT SHOW EDIT/DELETE".equals(event.getLinkedId())) {
                         editEventButton.setVisibility(View.GONE);
                         deleteEventButton.setVisibility(View.GONE);
@@ -124,29 +137,13 @@ public class EventDetailsActivity extends AppCompatActivity {
         try {
             SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-M-d", Locale.getDefault());
             SimpleDateFormat outputFormat = new SimpleDateFormat("MMMM d, yyyy", Locale.getDefault());
-
             Date parsedDate = inputFormat.parse(date);
             return (parsedDate != null) ? outputFormat.format(parsedDate) : date;
         } catch (ParseException e) {
-            e.printStackTrace();
-            return date; // Return the original date if parsing fails
+            return date;
         }
     }
 
-    // Helper method to delete an event.
-    private void deleteEvent(String eventId) {
-        eventViewModel.getEventById(eventId).observe(this, event -> {
-            if (event != null) {
-                eventViewModel.delete(event);
-                Toast.makeText(this, "Event deleted", Toast.LENGTH_SHORT).show();
-                finish();
-            } else {
-                Toast.makeText(this, "Error deleting event", Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-    // When EditEventActivity returns a result, update the current event ID and re-observe the event.
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -155,8 +152,6 @@ public class EventDetailsActivity extends AppCompatActivity {
             if (newEventId != null && !newEventId.isEmpty()) {
                 currentEventId = newEventId;
                 observeEvent(currentEventId);
-            } else {
-                Toast.makeText(EventDetailsActivity.this, "Updated event not found!", Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -167,8 +162,6 @@ public class EventDetailsActivity extends AppCompatActivity {
                 eventViewModel.delete(event);
                 Toast.makeText(this, "Event deleted", Toast.LENGTH_SHORT).show();
                 finish();
-            } else {
-                Toast.makeText(this, "Error deleting event", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -177,20 +170,14 @@ public class EventDetailsActivity extends AppCompatActivity {
         eventViewModel.getEventById(eventId).observe(this, event -> {
             if (event != null) {
                 if (event.getLinkedId() != null && !event.getLinkedId().isEmpty()) {
-                    eventViewModel.deleteEventsByLinkedId(event.getLinkedId()); // NOW RUNS IN BACKGROUND
+                    eventViewModel.deleteEventsByLinkedId(event.getLinkedId());
                     Toast.makeText(this, "All recurring events deleted", Toast.LENGTH_SHORT).show();
                 } else {
                     eventViewModel.delete(event);
                     Toast.makeText(this, "Event deleted", Toast.LENGTH_SHORT).show();
                 }
                 finish();
-            } else {
-                Toast.makeText(this, "Error deleting events", Toast.LENGTH_SHORT).show();
             }
         });
     }
-
-
-
-
 }

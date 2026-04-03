@@ -57,13 +57,24 @@
         android:layout_height="wrap_content"
         android:textSize="16sp" />
 
+    <!-- View Doctor Button  -->
+    <Button
+        android:id="@+id/viewDoctorButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="View Doctor Profile"
+        android:backgroundTint="#2D5A52"
+        android:textColor="@android:color/white"
+        android:layout_marginTop="16dp"
+        android:visibility="gone" />
+
     <!-- Edit Event Button -->
     <Button
         android:id="@+id/editEventButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Edit Event"
-        android:layout_marginTop="16dp" />
+        android:layout_marginTop="8dp" />
 
     <!-- Delete Event Button -->
     <Button
