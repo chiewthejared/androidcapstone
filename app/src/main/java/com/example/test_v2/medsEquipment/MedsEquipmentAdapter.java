@@ -2,6 +2,7 @@ package com.example.test_v2.medsEquipment;
 
 import android.app.AlertDialog;
 import android.content.Context;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,8 +17,8 @@ import com.example.test_v2.R;
 import java.util.List;
 
 public class MedsEquipmentAdapter extends RecyclerView.Adapter<MedsEquipmentAdapter.ViewHolder> {
-    private List<MedsEquipmentItem> items;
-    private Context context;
+    private final List<MedsEquipmentItem> items;
+    private final Context context;
 
     public MedsEquipmentAdapter(List<MedsEquipmentItem> items, Context context) {
         this.items = items;
@@ -27,32 +28,32 @@ public class MedsEquipmentAdapter extends RecyclerView.Adapter<MedsEquipmentAdap
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_meds_equipment, parent, false);
+        View view = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.item_meds_equipment, parent, false);
         return new ViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         MedsEquipmentItem item = items.get(position);
-        holder.name.setText(item.getName());
-        holder.date.setText(item.getDate());
-        holder.description.setText(item.getDescription());
 
-        // Handle item click for details
+        holder.name.setText(item.getName());
+        holder.date.setText(buildDateLabel(item));
+        holder.description.setText(buildSummary(item));
+        holder.description.setVisibility(View.VISIBLE);
+
         holder.itemView.setOnClickListener(v -> {
             if (context instanceof MedsAndEquipmentTrackerPage) {
                 if ("Medication".equals(item.getTag())) {
                     ((MedsAndEquipmentTrackerPage) context).showMedicationDetailsDialog(item);
                 } else if ("Equipment".equals(item.getTag())) {
-                    ((MedsAndEquipmentTrackerPage) context).showEquipmentDetailsDialog(item); // You'll create this!
-                }
-                else if ("Supplies".equals(item.getTag())) {
-                    ((MedsAndEquipmentTrackerPage) context).showSupplyDetailsDialog(item); // NEW
+                    ((MedsAndEquipmentTrackerPage) context).showEquipmentDetailsDialog(item);
+                } else if ("Supplies".equals(item.getTag())) {
+                    ((MedsAndEquipmentTrackerPage) context).showSupplyDetailsDialog(item);
                 }
             }
         });
 
-        // Handle delete button click
         holder.deleteButton.setOnClickListener(v -> {
             new AlertDialog.Builder(context)
                     .setTitle("Delete Item")
@@ -72,6 +73,41 @@ public class MedsEquipmentAdapter extends RecyclerView.Adapter<MedsEquipmentAdap
         return items.size();
     }
 
+    private String buildDateLabel(MedsEquipmentItem item) {
+        if ("Medication".equals(item.getTag())) {
+            return "Refill: " + safe(item.getDate());
+        } else if ("Equipment".equals(item.getTag())) {
+            return "Maintenance: " + safe(item.getDate());
+        } else {
+            return "Next Order: " + safe(item.getDate());
+        }
+    }
+
+    private String buildSummary(MedsEquipmentItem item) {
+        if ("Medication".equals(item.getTag())) {
+            String frequencyText = safe(item.getFrequency()).isEmpty()
+                    ? "N/A"
+                    : item.getFrequency() + " times/day";
+
+            return "Dosage: " + safe(item.getDosage())
+                    + "\nFrequency: " + frequencyText
+                    + "\nTime: " + safe(item.getTime())
+                    + "\nDoctor: " + safe(item.getPrescribingDoctor());
+        } else if ("Equipment".equals(item.getTag())) {
+            return "Serial: " + safe(item.getSerialNumber())
+                    + "\nDoctor: " + safe(item.getPrescribingDoctor())
+                    + "\nProvider: " + safe(item.getEquipmentProvider());
+        } else {
+            return "Order Qty: " + safe(item.getOrderQuantity())
+                    + "\nFrequency: " + safe(item.getOrderFrequency())
+                    + "\nDoctor: " + safe(item.getPrescribingDoctor());
+        }
+    }
+
+    private String safe(String value) {
+        return value == null ? "" : value.trim();
+    }
+
     public static class ViewHolder extends RecyclerView.ViewHolder {
         TextView name, date, description;
         Button deleteButton;
@@ -81,14 +117,13 @@ public class MedsEquipmentAdapter extends RecyclerView.Adapter<MedsEquipmentAdap
             name = itemView.findViewById(R.id.item_name);
             date = itemView.findViewById(R.id.item_date);
             description = itemView.findViewById(R.id.item_description);
-            deleteButton = itemView.findViewById(R.id.delete_button); // Make sure this ID exists in XML
+            deleteButton = itemView.findViewById(R.id.delete_button);
         }
     }
 
-    // Method to update the adapter dataset
     public void updateData(List<MedsEquipmentItem> newItems) {
-        this.items.clear();
-        this.items.addAll(newItems);
+        items.clear();
+        items.addAll(newItems);
         notifyDataSetChanged();
     }
 }

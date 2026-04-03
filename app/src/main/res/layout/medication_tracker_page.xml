@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@android:color/white">
@@ -7,121 +8,126 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:paddingBottom="12dp">
 
-        <!-- Header Section -->
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="120dp"
+            android:background="@color/brand_green"
+            android:padding="16dp">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/back_button"
+                style="@style/ArticlesVideosBackButton"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
+                android:backgroundTint="@color/tile_background_translucent"
+                android:text=""
+                app:cornerRadius="22dp"
+                app:icon="@drawable/ic_back_arrow"
+                app:iconGravity="textStart"
+                app:iconPadding="0dp"
+                app:iconSize="24dp"
+                app:iconTint="@color/brand_green" />
+
+            <TextView
+                android:id="@+id/page_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:text="Meds &amp; Equipment"
+                android:textColor="@android:color/white"
+                android:textSize="22sp"
+                android:textStyle="bold" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/add_current_item_button"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:backgroundTint="@color/tile_background_translucent"
+                android:text=""
+                app:cornerRadius="24dp"
+                app:icon="@drawable/ic_add"
+                app:iconGravity="textStart"
+                app:iconPadding="0dp"
+                app:iconSize="24dp"
+                app:iconTint="@color/brand_green" />
+        </RelativeLayout>
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:paddingStart="16dp"
+            android:paddingTop="14dp"
+            android:paddingEnd="16dp">
 
-            <View
+            <Button
+                android:id="@+id/add_medication_button"
+                style="@style/ArticlesVideosTabButton"
                 android:layout_width="0dp"
-                android:layout_height="47dp"
+                android:layout_height="42dp"
                 android:layout_weight="1"
-                android:background="#FFD700" />
+                android:backgroundTint="@android:color/white"
+                android:text="Medication"
+                android:textColor="@color/black" />
 
-            <View
+            <Button
+                android:id="@+id/add_equipment_button"
+                style="@style/ArticlesVideosTabButton"
                 android:layout_width="0dp"
-                android:layout_height="47dp"
+                android:layout_height="42dp"
                 android:layout_weight="1"
-                android:background="#8B0000" />
+                android:backgroundTint="#EFEFEF"
+                android:text="Equipment"
+                android:textColor="@color/black" />
+
+            <Button
+                android:id="@+id/add_supplies_button"
+                style="@style/ArticlesVideosTabButton"
+                android:layout_width="0dp"
+                android:layout_height="42dp"
+                android:layout_weight="1"
+                android:layout_marginEnd="0dp"
+                android:backgroundTint="#EFEFEF"
+                android:text="Supplies"
+                android:textColor="@color/black" />
         </LinearLayout>
-
-        <!-- Title -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Medication, Equipment &amp; Supplies Tracker"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            android:layout_gravity="center"
-            android:paddingTop="16dp" />
-
-        <!-- Add Buttons -->
-        <Button
-            android:id="@+id/add_medication_button"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Add Medication"
-            android:layout_marginTop="10dp"
-            android:backgroundTint="#FFD700"/>
-
-        <Button
-            android:id="@+id/add_equipment_button"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Add Equipment"
-            android:layout_marginTop="10dp"
-            android:backgroundTint="#8B0000"/>
-
-        <Button
-            android:id="@+id/add_supplies_button"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Add Supplies"
-            android:layout_marginTop="10dp"
-            android:backgroundTint="#4682B4" />
-
-        <!-- Medications List -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Medications"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:layout_marginTop="20dp"/>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/meds_recycler_view"
             android:layout_width="match_parent"
-            android:layout_height="200dp"
-            android:background="@android:color/white"
-            android:padding="5dp"
-            android:scrollbars="vertical"/>
-
-        <!-- Equipment List -->
-        <TextView
-            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Equipment"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:layout_marginTop="20dp"/>
+            android:layout_marginTop="10dp"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:scrollbars="vertical" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/equip_recycler_view"
             android:layout_width="match_parent"
-            android:layout_height="200dp"
-            android:background="@android:color/white"
-            android:padding="5dp"
-            android:scrollbars="vertical"/>
-
-        <!-- Supplies List -->
-        <TextView
-            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Supplies"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:layout_marginTop="20dp"/>
+            android:layout_marginTop="10dp"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:scrollbars="vertical"
+            android:visibility="gone" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/supplies_recycler_view"
             android:layout_width="match_parent"
-            android:layout_height="200dp"
-            android:background="@android:color/white"
-            android:padding="5dp"
-            android:scrollbars="vertical"/>
-
-        <!-- Back Button -->
-        <Button
-            android:id="@+id/back_button"
-            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Back"
-            android:layout_gravity="center"
-            android:layout_marginTop="20dp"/>
+            android:layout_marginTop="10dp"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:scrollbars="vertical"
+            android:visibility="gone" />
 
     </LinearLayout>
 </ScrollView>

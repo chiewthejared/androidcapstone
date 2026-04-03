@@ -3,8 +3,9 @@ package com.example.test_v2.medsEquipment;
 public class MedsEquipmentItem {
     private String id;
     private String name;
-    private String time;
     private String dosage;
+    private String frequency;
+    private String time;
     private String date;
     private String description;
     private String otherNames;
@@ -55,18 +56,18 @@ public class MedsEquipmentItem {
     private String alternateSources;
     private String supplyNotes;
 
-    // ======== Constructors ========
-
-    // Medication constructor
-    public MedsEquipmentItem(String id, String name, String dosage, String time, String date, String description,
-                             String otherNames, String specialInstructions, String bottleDescription,
-                             String sideEffects, String prescribingDoctor, String reasonPrescribed, String notes,
-                             String reminder2Weeks, String reminder1Week, String reminder5Days, String reminder3Days,
-                             String reminder1Day, String reminderDayOf, String tag) {
+    // Medication constructor with frequency
+    public MedsEquipmentItem(String id, String name, String dosage, String frequency, String time, String date,
+                             String description, String otherNames, String specialInstructions,
+                             String bottleDescription, String sideEffects, String prescribingDoctor,
+                             String reasonPrescribed, String notes, String reminder2Weeks, String reminder1Week,
+                             String reminder5Days, String reminder3Days, String reminder1Day,
+                             String reminderDayOf, String tag) {
         this.id = id;
         this.name = name;
         this.dosage = (dosage == null || dosage.isEmpty()) ? "N/A" : dosage;
-        this.time = time;
+        this.frequency = (frequency == null) ? "" : frequency;
+        this.time = (time == null) ? "" : time;
         this.date = date;
         this.description = description;
         this.otherNames = otherNames;
@@ -83,6 +84,17 @@ public class MedsEquipmentItem {
         this.reminder1Day = reminder1Day;
         this.reminderDayOf = reminderDayOf;
         this.tag = tag;
+    }
+
+    // Backward-compatible medication constructor
+    public MedsEquipmentItem(String id, String name, String dosage, String time, String date, String description,
+                             String otherNames, String specialInstructions, String bottleDescription,
+                             String sideEffects, String prescribingDoctor, String reasonPrescribed, String notes,
+                             String reminder2Weeks, String reminder1Week, String reminder5Days, String reminder3Days,
+                             String reminder1Day, String reminderDayOf, String tag) {
+        this(id, name, dosage, "", time, date, description, otherNames, specialInstructions, bottleDescription,
+                sideEffects, prescribingDoctor, reasonPrescribed, notes, reminder2Weeks, reminder1Week,
+                reminder5Days, reminder3Days, reminder1Day, reminderDayOf, tag);
     }
 
     // Equipment constructor
@@ -122,8 +134,8 @@ public class MedsEquipmentItem {
         this.reminderDayOf = reminderDayOf;
         this.tag = tag;
 
-        // Med-specific defaults
         this.dosage = "N/A";
+        this.frequency = "";
         this.time = "";
         this.otherNames = "";
         this.specialInstructions = "";
@@ -145,7 +157,7 @@ public class MedsEquipmentItem {
                              String reminder3Days, String reminder1Day, String reminderDayOf, String tag) {
         this.id = id;
         this.name = name;
-        this.date = date; // Next Order Date
+        this.date = date;
         this.description = description;
         this.preferredBrand = preferredBrand;
         this.alternativeBrands = alternativeBrands;
@@ -173,8 +185,8 @@ public class MedsEquipmentItem {
         this.reminderDayOf = reminderDayOf;
         this.tag = tag;
 
-        // Default med/equip fields to empty
         this.dosage = "N/A";
+        this.frequency = "";
         this.time = "";
         this.serialNumber = "";
         this.weight = "";
@@ -193,10 +205,10 @@ public class MedsEquipmentItem {
         this.notes = "";
     }
 
-    // ================= Getters =================
     public String getId() { return id; }
     public String getName() { return name; }
     public String getDosage() { return dosage; }
+    public String getFrequency() { return frequency; }
     public String getTime() { return time; }
     public String getDate() { return date; }
     public String getDescription() { return description; }
@@ -215,7 +227,6 @@ public class MedsEquipmentItem {
     public String getReminderDayOf() { return reminderDayOf; }
     public String getTag() { return tag; }
 
-    // Equipment getters
     public String getSerialNumber() { return serialNumber; }
     public String getWeight() { return weight; }
     public String getSize() { return size; }
@@ -232,7 +243,6 @@ public class MedsEquipmentItem {
     public String getAssociatedComponents() { return associatedComponents; }
     public String getEquipmentNotes() { return equipmentNotes; }
 
-    // Supply getters
     public String getPreferredBrand() { return preferredBrand; }
     public String getAlternativeBrands() { return alternativeBrands; }
     public String getSku() { return sku; }
@@ -248,10 +258,10 @@ public class MedsEquipmentItem {
     public String getAlternateSources() { return alternateSources; }
     public String getSupplyNotes() { return supplyNotes; }
 
-    // ================= Setters =================
     public void setId(String id) { this.id = id; }
     public void setName(String name) { this.name = name; }
     public void setDosage(String dosage) { this.dosage = dosage; }
+    public void setFrequency(String frequency) { this.frequency = frequency; }
     public void setTime(String time) { this.time = time; }
     public void setDate(String date) { this.date = date; }
     public void setDescription(String description) { this.description = description; }
@@ -270,7 +280,6 @@ public class MedsEquipmentItem {
     public void setReminderDayOf(String reminderDayOf) { this.reminderDayOf = reminderDayOf; }
     public void setTag(String tag) { this.tag = tag; }
 
-    // Equipment setters
     public void setSerialNumber(String serialNumber) { this.serialNumber = serialNumber; }
     public void setWeight(String weight) { this.weight = weight; }
     public void setSize(String size) { this.size = size; }
@@ -287,7 +296,6 @@ public class MedsEquipmentItem {
     public void setAssociatedComponents(String associatedComponents) { this.associatedComponents = associatedComponents; }
     public void setEquipmentNotes(String equipmentNotes) { this.equipmentNotes = equipmentNotes; }
 
-    // Supply setters
     public void setPreferredBrand(String preferredBrand) { this.preferredBrand = preferredBrand; }
     public void setAlternativeBrands(String alternativeBrands) { this.alternativeBrands = alternativeBrands; }
     public void setSku(String sku) { this.sku = sku; }
