@@ -3,11 +3,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.test_v2"
+    namespace = "com.swf.app"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.example.test_v2"
+        applicationId = "com.swf.app"
         minSdk = 24
         targetSdk = 34
         versionCode = 1

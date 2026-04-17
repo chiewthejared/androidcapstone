@@ -109,6 +109,17 @@
             android:paddingEnd="16dp"
             android:scrollbars="vertical" />
 
+        <TextView
+            android:id="@+id/empty_medication_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="No Medication Listed"
+            android:textSize="16sp"
+            android:textColor="@color/secondary_text"
+            android:gravity="center"
+            android:layout_marginTop="40dp"
+            android:visibility="gone"/>
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/equip_recycler_view"
             android:layout_width="match_parent"
@@ -119,6 +130,17 @@
             android:scrollbars="vertical"
             android:visibility="gone" />
 
+        <TextView
+            android:id="@+id/empty_equipment_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="No Equipment Listed"
+            android:textSize="16sp"
+            android:textColor="@color/secondary_text"
+            android:gravity="center"
+            android:layout_marginTop="40dp"
+            android:visibility="gone"/>
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/supplies_recycler_view"
             android:layout_width="match_parent"
@@ -128,6 +150,17 @@
             android:paddingEnd="16dp"
             android:scrollbars="vertical"
             android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/empty_supplies_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="No Supplies Listed"
+            android:textSize="16sp"
+            android:textColor="@color/secondary_text"
+            android:gravity="center"
+            android:layout_marginTop="40dp"
+            android:visibility="gone"/>
 
     </LinearLayout>
 </ScrollView>
