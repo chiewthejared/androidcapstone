@@ -3,7 +3,7 @@ plugins {
 }
 
 android {
-    namespace = "com.swf.app"
+    namespace = "com.swf.capstone26"
     compileSdk = 34
 
     defaultConfig {
