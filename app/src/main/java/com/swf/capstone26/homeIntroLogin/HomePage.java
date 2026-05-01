@@ -181,82 +181,46 @@ public class HomePage extends AppCompatActivity {
      * the first valid Activity. If none found, shows a helpful Toast with attempted class names.
      */
     private void openForTile(String label) {
-        String[] candidates = null;
+        Intent intent = null;
 
         switch (label) {
             case "Calendar":
-                candidates = new String[] {
-                        "com.swf.app.calendar.CalendarPage",
-                        "com.swf.app.CalendarPage",
-                        "com.swf.app.calendar.CalendarActivity"
-                };
+                intent = new Intent(this, com.swf.capstone26.calendar.CalendarPage.class);
                 break;
+
             case "Notes":
-                candidates = new String[] {
-                        "com.swf.app.notes.NotesPage",
-                        "com.swf.app.NotesPage",
-                        "com.swf.app.notes.NotesActivity"
-                };
+                intent = new Intent(this, com.swf.capstone26.notes.NotesPage.class);
                 break;
+
             case "Meds & Equipment":
-                candidates = new String[] {
-                        "com.swf.app.medsEquipment.MedsAndEquipmentTrackerPage",
-                        "com.swf.app.medsEquipment.MedsAndEquipmentTrackerActivity",
-                        "com.swf.app.medsEquipment.MedsEquipmentPage"
-                };
+                intent = new Intent(this, com.swf.capstone26.medsEquipment.MedsAndEquipmentTrackerPage.class);
                 break;
-            case "Doctor Info": {
-                try {
-                    // Directly start the existing activity in the doctorInfo package (case-sensitive)
-                    Intent intent = new Intent(this, com.swf.capstone26.doctorInfo.DoctorInfoPage.class);
-                    startActivity(intent);
-                } catch (Exception e) {
-                    // If something goes wrong, show a helpful message so we can debug
-                    Toast.makeText(this, "Failed to open Doctor Info: " + e.getMessage(), Toast.LENGTH_LONG).show();
-                }
+
+            case "Doctor Info":
+                intent = new Intent(this, com.swf.capstone26.doctorInfo.DoctorInfoPage.class);
                 break;
-            }
+
             case "Analytics":
-                candidates = new String[] {
-                        "com.swf.app.timer.AnalyticsPage",
-                        "com.swf.app.analytics.AnalyticsPage",
-                        "com.swf.app.timer.AnalyticsActivity",
-                        "com.swf.app.AnalyticsPage"
-                };
+                intent = new Intent(this, com.swf.capstone26.AnalyticsPage.class);
                 break;
+
             case "Articles & Videos":
-                candidates = new String[] {
-                        "com.swf.app.articlesvideos.ArticlesVideosPage",
-                        "com.swf.app.articlesvideos.ArticlesVideosActivity",
-                        "com.swf.app.articlesvideos.ArticlesVideos"
-                };
+                intent = new Intent(this, com.swf.capstone26.articlesvideos.ArticlesVideosPage.class);
                 break;
+
             case "Timer":
-                candidates = new String[] {
-                        "com.swf.app.timer.TimerPage",
-                        "com.swf.app.timer.GuestTimerPage",
-                        "com.swf.app.timer.TimerActivity",
-                        "com.swf.app.TimerPage"
-                };
+                intent = new Intent(this, com.swf.capstone26.TimerPage.class);
                 break;
+
             case "My Profile":
-                candidates = new String[] {
-                        "com.swf.app.profile.MyProfilePage",
-                        "com.swf.app.profile.ProfileActivity",
-                        "com.swf.app.MyProfilePage"
-                };
+                intent = new Intent(this, com.swf.capstone26.MyProfilePage.class);
                 break;
-            default:
-                Toast.makeText(this, "No action defined for: " + label, Toast.LENGTH_SHORT).show();
-                return;
         }
 
-        boolean started = tryStartCandidates(candidates);
-        if (!started) {
-            String tried = android.text.TextUtils.join(", ", candidates);
-            Toast.makeText(this,
-                    "No matching Activity found for '" + label + "'. Tried: " + tried,
-                    Toast.LENGTH_LONG).show();
+        if (intent != null) {
+            startActivity(intent);
+        } else {
+            Toast.makeText(this, "No action for: " + label, Toast.LENGTH_SHORT).show();
         }
     }
 
