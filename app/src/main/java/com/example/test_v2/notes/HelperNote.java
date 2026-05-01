@@ -19,7 +19,7 @@ public class HelperNote {
     public String content;
 
     @ColumnInfo(name = "file_path")
-    public String filePath; // Stores file URI if applicable
+    public String filePath;
 
     @ColumnInfo(name = "created_at")
     public String createdAt;

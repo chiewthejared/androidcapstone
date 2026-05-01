@@ -3,47 +3,163 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@android:color/white"
-    android:padding="0dp">
+    android:background="#F5F5F5">
 
-    <!-- Header -->
+    <!-- Top Bar -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:background="#2D5A52"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp">
+
+        <Button
+            android:id="@+id/back_button"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:background="@drawable/circle_button_bg2"
+            android:text="&lt;"
+            android:textColor="@android:color/white"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:padding="0dp" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="Notes"
+            android:textColor="@android:color/white"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/add_note_button"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:background="@drawable/circle_button_bg2"
+            android:text="+"
+            android:textColor="@android:color/white"
+            android:textSize="20sp"
+            android:padding="0dp" />
+    </LinearLayout>
+
+    <!-- Search Bar -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:background="@android:color/white"
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp">
 
-        <View
-            android:layout_width="0dp"
-            android:layout_height="50dp"
-            android:layout_weight="1"
-            android:background="#FFD700" /> <!-- Gold color -->
-
-        <View
-            android:layout_width="0dp"
-            android:layout_height="50dp"
-            android:layout_weight="1"
-            android:background="#8B0000" /> <!-- Magenta color -->
-
+        <EditText
+            android:id="@+id/search_bar"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:background="@drawable/search_bar_bg"
+            android:drawableStart="@android:drawable/ic_menu_search"
+            android:drawablePadding="8dp"
+            android:hint="Search notes..."
+            android:textSize="13sp"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp"
+            android:inputType="text"
+            android:singleLine="true" />
     </LinearLayout>
 
-    <EditText
-        android:id="@+id/search_bar"
+    <!-- Category Filter Tags -->
+    <HorizontalScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Search notes..."
-        android:padding="10dp"
         android:background="@android:color/white"
-        android:textSize="16sp"
-        android:drawableStart="@android:drawable/ic_menu_search"/>
+        android:scrollbars="none"
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp"
+        android:paddingBottom="8dp">
 
-    <!-- Add Note Button -->
-    <Button
-        android:id="@+id/add_note_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="New Note"
-        android:layout_marginTop="8dp"
-        android:layout_gravity="center_horizontal" />
+        <LinearLayout
+            android:id="@+id/filter_tag_container"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <TextView
+                android:id="@+id/filter_all"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="All"
+                android:textSize="13sp"
+                android:textColor="#C0626A"
+                android:background="@drawable/tag_selected_bg"
+                android:paddingStart="14dp"
+                android:paddingEnd="14dp"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
+                android:layout_marginEnd="8dp" />
+
+            <TextView
+                android:id="@+id/filter_medical"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Medical"
+                android:textSize="13sp"
+                android:textColor="#3A7BD5"
+                android:background="@drawable/tag_unselected_bg"
+                android:paddingStart="14dp"
+                android:paddingEnd="14dp"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
+                android:layout_marginEnd="8dp" />
+
+            <TextView
+                android:id="@+id/filter_personal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Personal"
+                android:textSize="13sp"
+                android:textColor="#3A7BD5"
+                android:background="@drawable/tag_unselected_bg"
+                android:paddingStart="14dp"
+                android:paddingEnd="14dp"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
+                android:layout_marginEnd="8dp" />
+
+            <TextView
+                android:id="@+id/filter_school"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="School"
+                android:textSize="13sp"
+                android:textColor="#3A7BD5"
+                android:background="@drawable/tag_unselected_bg"
+                android:paddingStart="14dp"
+                android:paddingEnd="14dp"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
+                android:layout_marginEnd="8dp" />
+
+            <TextView
+                android:id="@+id/filter_other"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Other"
+                android:textSize="13sp"
+                android:textColor="#3A7BD5"
+                android:background="@drawable/tag_unselected_bg"
+                android:paddingStart="14dp"
+                android:paddingEnd="14dp"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
+                android:layout_marginEnd="8dp" />
+        </LinearLayout>
+    </HorizontalScrollView>
 
     <!-- Notes List -->
     <androidx.recyclerview.widget.RecyclerView
@@ -51,30 +167,27 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:scrollbars="vertical" />
+        android:paddingTop="4dp"
+        android:clipToPadding="false" />
 
-    <!-- File Import Buttons -->
+    <!-- Add Media Button -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center"
-        android:padding="8dp">
+        android:background="@android:color/white"
+        android:padding="12dp"
+        android:gravity="center">
 
         <Button
             android:id="@+id/add_media_button"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Add Media"
-            android:layout_margin="10dp"/>
+            android:layout_height="40dp"
+            android:text="+ Add Media"
+            android:textColor="#2D5A52"
+            android:backgroundTint="#E8F0EF"
+            android:textSize="13sp"
+            android:paddingStart="20dp"
+            android:paddingEnd="20dp" />
     </LinearLayout>
-
-    <!-- Back Button -->
-    <Button
-        android:id="@+id/back_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Back"
-        android:layout_gravity="center_horizontal" />
 
 </LinearLayout>

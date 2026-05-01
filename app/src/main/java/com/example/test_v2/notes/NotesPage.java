@@ -10,13 +10,13 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.test_v2.fileAndDatabase.FileStorageHelper;
@@ -27,7 +27,6 @@ import com.example.test_v2.R;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -40,8 +39,11 @@ public class NotesPage extends Activity {
     private HelperAppDatabase db;
     private int currentUserId = -1;
     private ExecutorService executorService = Executors.newSingleThreadExecutor();
-    private EditText searchBar;
     private List<HelperNote> allNotes = new ArrayList<>();
+    private String currentFilter = "all";
+    private String currentSearch = "";
+
+    private TextView filterAll, filterMedical, filterPersonal, filterSchool, filterOther;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,35 +53,87 @@ public class NotesPage extends Activity {
         db = HelperAppDatabase.getDatabase(getApplicationContext());
 
         recyclerView = findViewById(R.id.notes_recycler_view);
-        recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         adapter = new NotesAdapter(new ArrayList<>(), this::showEditNoteDialog);
         recyclerView.setAdapter(adapter);
 
-        Button addMediaButton = findViewById(R.id.add_media_button);
         Button addNoteButton = findViewById(R.id.add_note_button);
+        Button addMediaButton = findViewById(R.id.add_media_button);
         Button backButton = findViewById(R.id.back_button);
 
-        addMediaButton.setOnClickListener(v -> selectFile("*/*"));
         addNoteButton.setOnClickListener(v -> showAddNoteDialog());
+        addMediaButton.setOnClickListener(v -> selectFile("*/*"));
         backButton.setOnClickListener(v -> finish());
 
-        // Add search bar functionality
+        // Search bar
         EditText searchBar = findViewById(R.id.search_bar);
         searchBar.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                filterNotes(s.toString().trim());
+            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            @Override public void onTextChanged(CharSequence s, int start, int before, int count) {
+                currentSearch = s.toString().trim();
+                applyFilterAndSearch();
             }
-
-            @Override
-            public void afterTextChanged(Editable s) {}
+            @Override public void afterTextChanged(Editable s) {}
         });
 
+        // Filter tags
+        filterAll      = findViewById(R.id.filter_all);
+        filterMedical  = findViewById(R.id.filter_medical);
+        filterPersonal = findViewById(R.id.filter_personal);
+        filterSchool   = findViewById(R.id.filter_school);
+        filterOther    = findViewById(R.id.filter_other);
+
+        filterAll.setOnClickListener(v -> setFilter("all"));
+        filterMedical.setOnClickListener(v -> setFilter("Medical"));
+        filterPersonal.setOnClickListener(v -> setFilter("Personal"));
+        filterSchool.setOnClickListener(v -> setFilter("School"));
+        filterOther.setOnClickListener(v -> setFilter("Other"));
+
         executorService.execute(this::fetchUserAndLoadNotes);
+    }
+
+    private void setFilter(String filter) {
+        currentFilter = filter;
+
+        int blue = android.graphics.Color.parseColor("#3A7BD5");
+        filterAll.setTextColor(blue);
+        filterMedical.setTextColor(blue);
+        filterPersonal.setTextColor(blue);
+        filterSchool.setTextColor(blue);
+        filterOther.setTextColor(blue);
+
+        filterAll.setBackgroundResource(R.drawable.tag_unselected_bg);
+        filterMedical.setBackgroundResource(R.drawable.tag_unselected_bg);
+        filterPersonal.setBackgroundResource(R.drawable.tag_unselected_bg);
+        filterSchool.setBackgroundResource(R.drawable.tag_unselected_bg);
+        filterOther.setBackgroundResource(R.drawable.tag_unselected_bg);
+
+        TextView selected;
+        switch (filter) {
+            case "Medical":  selected = filterMedical;  break;
+            case "Personal": selected = filterPersonal; break;
+            case "School":   selected = filterSchool;   break;
+            case "Other":    selected = filterOther;    break;
+            default:         selected = filterAll;      break;
+        }
+        selected.setBackgroundResource(R.drawable.tag_selected_bg);
+        selected.setTextColor(android.graphics.Color.parseColor("#C0626A"));
+
+        applyFilterAndSearch();
+    }
+
+    private void applyFilterAndSearch() {
+        List<HelperNote> filtered = new ArrayList<>();
+        for (HelperNote note : allNotes) {
+            // 没有 category 字段，filter 暂时全显示
+            boolean searchMatch = currentSearch.isEmpty() ||
+                    note.title.toLowerCase().contains(currentSearch.toLowerCase());
+            if (searchMatch) {
+                filtered.add(note);
+            }
+        }
+        runOnUiThread(() -> adapter.updateNotes(filtered));
     }
 
     private void fetchUserAndLoadNotes() {
@@ -88,14 +142,12 @@ public class NotesPage extends Activity {
             runOnUiThread(this::finish);
             return;
         }
-
         executorService.execute(() -> {
             HelperUserAccount loggedInUser = db.userDao().getUserByPin(hashedPin);
             if (loggedInUser == null) {
                 runOnUiThread(this::finish);
                 return;
             }
-
             currentUserId = loggedInUser.getId();
             runOnUiThread(this::loadNotes);
         });
@@ -103,8 +155,8 @@ public class NotesPage extends Activity {
 
     private void loadNotes() {
         executorService.execute(() -> {
-            allNotes = db.noteDao().getAllNotesForUser(String.valueOf(currentUserId)); // Store all notes for filtering
-            runOnUiThread(() -> adapter.updateNotes(new ArrayList<>(allNotes)));
+            allNotes = db.noteDao().getAllNotesForUser(String.valueOf(currentUserId));
+            applyFilterAndSearch();
         });
     }
 
@@ -119,9 +171,7 @@ public class NotesPage extends Activity {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == FILE_PICKER_REQUEST_CODE && resultCode == RESULT_OK && data != null) {
             Uri fileUri = data.getData();
-            if (fileUri != null) {
-                saveFileToInternalStorage(fileUri);
-            }
+            if (fileUri != null) saveFileToInternalStorage(fileUri);
         }
     }
 
@@ -130,9 +180,7 @@ public class NotesPage extends Activity {
             try {
                 String originalFileName = FileStorageHelper.getFileName(getContentResolver(), fileUri);
                 File savedFile = FileStorageHelper.saveFile(getContentResolver(), getFilesDir(), fileUri, originalFileName);
-                if (savedFile != null) {
-                    insertFileIntoDatabase(savedFile.getAbsolutePath(), originalFileName);
-                }
+                if (savedFile != null) insertFileIntoDatabase(savedFile.getAbsolutePath(), originalFileName);
             } catch (Exception e) {
                 Log.e("NotesPage", "Error saving file", e);
             }
@@ -148,13 +196,14 @@ public class NotesPage extends Activity {
             newNote.filePath = filePath;
             newNote.createdAt = String.valueOf(System.currentTimeMillis());
 
-            //Determine file type by extension
-            if (filePath.endsWith(".jpg") || filePath.endsWith(".jpeg") || filePath.endsWith(".png") || filePath.endsWith(".heic")) {
+            if (filePath.endsWith(".jpg") || filePath.endsWith(".jpeg") ||
+                    filePath.endsWith(".png") || filePath.endsWith(".heic")) {
                 newNote.type = "image";
             } else if (filePath.endsWith(".pdf")) {
                 newNote.type = "pdf";
-            } else if (filePath.endsWith(".mp4") || filePath.endsWith(".mov") || filePath.endsWith(".avi") || filePath.endsWith(".mkv")) {
-                newNote.type = "video";  // Identify as a video
+            } else if (filePath.endsWith(".mp4") || filePath.endsWith(".mov") ||
+                    filePath.endsWith(".avi") || filePath.endsWith(".mkv")) {
+                newNote.type = "video";
             } else {
                 newNote.type = "other";
             }
@@ -167,8 +216,7 @@ public class NotesPage extends Activity {
     private void showAddNoteDialog() {
         runOnUiThread(() -> {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            LayoutInflater inflater = getLayoutInflater();
-            View dialogView = inflater.inflate(R.layout.dialog_add_note, null);
+            View dialogView = getLayoutInflater().inflate(R.layout.dialog_add_note, null);
             builder.setView(dialogView);
 
             EditText noteTitleInput = dialogView.findViewById(R.id.note_title_input);
@@ -188,7 +236,6 @@ public class NotesPage extends Activity {
             });
 
             cancelButton.setOnClickListener(v -> dialog.dismiss());
-
             dialog.show();
         });
     }
@@ -202,7 +249,6 @@ public class NotesPage extends Activity {
             newNote.filePath = "";
             newNote.createdAt = String.valueOf(System.currentTimeMillis());
             newNote.type = "note";
-
             db.noteDao().insert(newNote);
             runOnUiThread(this::loadNotes);
         });
@@ -211,8 +257,7 @@ public class NotesPage extends Activity {
     private void showEditNoteDialog(HelperNote note) {
         runOnUiThread(() -> {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            LayoutInflater inflater = getLayoutInflater();
-            View dialogView = inflater.inflate(R.layout.dialog_add_note, null);
+            View dialogView = getLayoutInflater().inflate(R.layout.dialog_add_note, null);
             builder.setView(dialogView);
 
             EditText noteTitleInput = dialogView.findViewById(R.id.note_title_input);
@@ -235,7 +280,6 @@ public class NotesPage extends Activity {
             });
 
             cancelButton.setOnClickListener(v -> dialog.dismiss());
-
             dialog.show();
         });
     }
@@ -265,74 +309,52 @@ public class NotesPage extends Activity {
 
     public void showOptionsDialog(HelperNote note) {
         runOnUiThread(() -> {
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setTitle("Options");
-
-            String[] options = {"Rename", "Delete"};
-            builder.setItems(options, (dialog, which) -> {
-                if (which == 0) {
-                    showRenameDialog(note); // Rename
-                } else if (which == 1) {
-                    showDeleteConfirmationDialog(note); // Delete
-                }
-            });
-
-            builder.setNegativeButton("Cancel", (dialog1, which) -> dialog1.dismiss());
-            builder.show();
+            new AlertDialog.Builder(this)
+                    .setTitle("Options")
+                    .setItems(new String[]{"Rename", "Delete"}, (dialog, which) -> {
+                        if (which == 0) showRenameDialog(note);
+                        else showDeleteConfirmationDialog(note);
+                    })
+                    .setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss())
+                    .show();
         });
     }
 
     public void showRenameDialog(HelperNote note) {
         runOnUiThread(() -> {
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setTitle("Rename File");
-
-            // Input field for new name
             EditText input = new EditText(this);
-            input.setText(note.title); // Set existing name
-            builder.setView(input);
-
-            builder.setPositiveButton("Rename", (dialog, which) -> {
-                String newTitle = input.getText().toString().trim();
-                if (!newTitle.isEmpty()) {
-                    renameFile(note, newTitle);
-                }
-            });
-
-            builder.setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss());
-            builder.show();
+            input.setText(note.title);
+            new AlertDialog.Builder(this)
+                    .setTitle("Rename")
+                    .setView(input)
+                    .setPositiveButton("Rename", (dialog, which) -> {
+                        String newTitle = input.getText().toString().trim();
+                        if (!newTitle.isEmpty()) renameFile(note, newTitle);
+                    })
+                    .setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss())
+                    .show();
         });
     }
 
     private void renameFile(HelperNote note, String newTitle) {
         executorService.execute(() -> {
             if (note.type.equals("note")) {
-                //  Rename text note (update title in database only)
                 note.title = newTitle;
                 db.noteDao().update(note);
                 runOnUiThread(this::loadNotes);
             } else {
-                //  Rename file-based notes (PDFs & Images)
                 File oldFile = new File(note.filePath);
                 if (!oldFile.exists()) {
                     runOnUiThread(() -> Toast.makeText(this, "File not found", Toast.LENGTH_SHORT).show());
                     return;
                 }
-
-                // Get file extension
                 String extension = "";
                 int i = note.filePath.lastIndexOf('.');
-                if (i > 0) {
-                    extension = note.filePath.substring(i);
-                }
-
-                // Create new file with updated name
+                if (i > 0) extension = note.filePath.substring(i);
                 File newFile = new File(oldFile.getParent(), newTitle + extension);
-                boolean renamed = oldFile.renameTo(newFile);
-
-                if (renamed) {
-                    note.title = newTitle;  // Update title
-                    note.filePath = newFile.getAbsolutePath(); // Update path in database
+                if (oldFile.renameTo(newFile)) {
+                    note.title = newTitle;
+                    note.filePath = newFile.getAbsolutePath();
                     db.noteDao().update(note);
                     runOnUiThread(this::loadNotes);
                 } else {
@@ -341,88 +363,24 @@ public class NotesPage extends Activity {
             }
         });
     }
-    private void showDeleteConfirmationDialog(HelperNote note) {
-        runOnUiThread(() -> {
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setTitle("Confirm Deletion");
-            builder.setMessage("Are you sure you want to delete this item?");
 
-            builder.setPositiveButton("Delete", (dialog, which) -> deleteNote(note));
-            builder.setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss());
-            builder.show();
-        });
+    private void showDeleteConfirmationDialog(HelperNote note) {
+        runOnUiThread(() -> new AlertDialog.Builder(this)
+                .setTitle("Confirm Deletion")
+                .setMessage("Are you sure you want to delete this item?")
+                .setPositiveButton("Delete", (dialog, which) -> deleteNote(note))
+                .setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss())
+                .show());
     }
 
     private void deleteNote(HelperNote note) {
         executorService.execute(() -> {
-            if (!note.filePath.isEmpty()) {
+            if (note.filePath != null && !note.filePath.isEmpty()) {
                 File file = new File(note.filePath);
-                if (file.exists()) {
-                    boolean deleted = file.delete();
-                    if (!deleted) {
-                        runOnUiThread(() -> Toast.makeText(this, "Failed to delete file", Toast.LENGTH_SHORT).show());
-                    }
-                }
+                if (file.exists()) file.delete();
             }
-
             db.noteDao().delete(note);
             runOnUiThread(this::loadNotes);
         });
     }
-
-    private void filterNotes(String query) {
-        if (query.isEmpty()) {
-            runOnUiThread(() -> adapter.updateNotes(new ArrayList<>(allNotes)));
-            return;
-        }
-
-        List<MatchResult> matchResults = new ArrayList<>();
-
-        for (HelperNote note : allNotes) {
-            String titleLower = note.title.toLowerCase();
-            String queryLower = query.toLowerCase();
-
-            if (titleLower.contains(queryLower)) {
-                int matchScore = 0;
-
-                if (titleLower.equals(queryLower)) {
-                    matchScore = 3; // Exact match gets highest priority
-                } else if (titleLower.startsWith(queryLower)) {
-                    matchScore = 2; // Starts with query gets second priority
-                } else {
-                    matchScore = 1; // Contains query but not at the start
-                }
-
-                matchResults.add(new MatchResult(note, matchScore));
-            }
-        }
-
-        // Sort by match score (higher first), then by createdAt (newest first)
-        Collections.sort(matchResults, (a, b) -> {
-            if (b.matchScore != a.matchScore) {
-                return Integer.compare(b.matchScore, a.matchScore); // Higher score first
-            }
-            return Long.compare(Long.parseLong(b.note.createdAt), Long.parseLong(a.note.createdAt)); // Newest first
-        });
-
-        // Extract sorted HelperNote objects
-        List<HelperNote> sortedNotes = new ArrayList<>();
-        for (MatchResult result : matchResults) {
-            sortedNotes.add(result.note);
-        }
-
-        runOnUiThread(() -> adapter.updateNotes(sortedNotes));
-    }
-
-    //  Helper class to store match scores
-    private static class MatchResult {
-        HelperNote note;
-        int matchScore;
-
-        MatchResult(HelperNote note, int matchScore) {
-            this.note = note;
-            this.matchScore = matchScore;
-        }
-    }
-
 }

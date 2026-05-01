@@ -58,7 +58,6 @@ public class EditEventActivity extends AppCompatActivity {
     private SharedPreferences userSession;
     private boolean isNewEvent = false;
 
-    // Doctor list from DB
     private List<DoctorItem> doctorList = new ArrayList<>();
     private ArrayAdapter<String> doctorAdapter;
 
@@ -124,19 +123,16 @@ public class EditEventActivity extends AppCompatActivity {
         Button cancelButton = findViewById(R.id.cancelEventButton);
         cancelButton.setOnClickListener(v -> finish());
 
-        // Doctor checkbox toggle
         cbDoctorAppointment.setOnCheckedChangeListener((btn, checked) -> {
             layoutDoctorSection.setVisibility(checked ? View.VISIBLE : View.GONE);
         });
 
-        // Load doctors
         loadDoctorsFromDatabase();
 
         eventViewModel = new ViewModelProvider(this).get(EventViewModel.class);
         eventId = getIntent().getStringExtra("uuid");
 
         if (eventId == null || eventId.isEmpty()) {
-            // ===== 新建模式 =====
             isNewEvent = true;
             eventId = UUID.randomUUID().toString();
             link = UUID.randomUUID().toString();
@@ -153,12 +149,19 @@ public class EditEventActivity extends AppCompatActivity {
             loadTagsFromDatabase(tagSpinner, "None");
 
         } else {
-            // ===== 编辑模式 =====
             isNewEvent = false;
             eventViewModel.getEventById(eventId).observe(this, event -> {
                 if (event != null) {
                     titleInput.setText(event.getTitle());
-                    descriptionInput.setText(event.getDescription());
+
+                    // 编辑模式：去掉 DOCTORID 前缀再显示
+                    String desc = event.getDescription();
+                    if (desc != null && desc.startsWith("DOCTORID:")) {
+                        String[] parts = desc.split("\n", 2);
+                        desc = parts.length > 1 ? parts[1].trim() : "";
+                    }
+                    descriptionInput.setText(desc);
+
                     selectedDate = event.getDate();
                     selectedStartTime = event.getStartTime();
                     selectedEndTime = event.getEndTime();
@@ -215,25 +218,29 @@ public class EditEventActivity extends AppCompatActivity {
         saveButton.setOnClickListener(view -> {
             String finalSession = userSession.getString("loggedInPin", "");
             String finalTag = tagSpinner.getSelectedItem().toString();
-
-            // 处理 doctor appointment 标题
             String title = titleInput.getText().toString().trim();
+            String finalDescription = descriptionInput.getText().toString().trim();
+
+            // ===== Doctor Appointment 处理 =====
             if (cbDoctorAppointment.isChecked()) {
                 String manualName = etDoctorNameManual.getText().toString().trim();
                 if (!manualName.isEmpty()) {
+                    // 手动输入医生名，没有 doctorId
                     title = "Dr. " + manualName + (title.isEmpty() ? "" : " - " + title);
                 } else if (spinnerDoctor.getSelectedItemPosition() > 0) {
+                    // 从 spinner 选了医生，存入 doctorId
                     DoctorItem selected = doctorList.get(spinnerDoctor.getSelectedItemPosition() - 1);
                     title = "Dr. " + selected.name + (title.isEmpty() ? "" : " - " + title);
+                    // 把 doctorId 藏在 description 前缀里
+                    finalDescription = "DOCTORID:" + selected.id + "\n" + finalDescription;
                 }
-                // doctor appointment 也用蓝色，tag 标记为 "DoctorAppointment"
                 finalTag = "DoctorAppointment";
             }
 
             HelperEvent updatedEvent = new HelperEvent(
                     eventId,
                     title,
-                    descriptionInput.getText().toString().trim(),
+                    finalDescription,
                     selectedDate,
                     selectedStartTime,
                     selectedEndTime,
